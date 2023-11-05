@@ -1,0 +1,6 @@
+[submodule "Assets/SaintsField"]
+	path = Assets/SaintsField
+	url = git@github.com:TylerTemp/SaintsField.git
+[submodule "Assets/SaintsBuild"]
+	path = Assets/SaintsBuild
+	url = git@github.com:TylerTemp/SaintsBuild.git
