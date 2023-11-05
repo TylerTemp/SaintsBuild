@@ -1,0 +1,15 @@
+.idea
+/dist
+/Library
+/Logs
+/obj
+/UserSettings
+/*.csproj
+/*.sln
+/Temp
+/.dist
+/ProjectSettings
+/RADEME.md.meta
+/package.json.meta
+/Samples
+/Samples.meta
