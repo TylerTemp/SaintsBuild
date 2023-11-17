@@ -1,9 +1,9 @@
 {
   "name": "today.comes.saintsbuild",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "SaintsField",
   "description": "A Unity plugin for building (packing) process",
-  "unity": "2018.4",
+  "unity": "2020.1",
   "dependencies": {
   },
   "keywords": [
