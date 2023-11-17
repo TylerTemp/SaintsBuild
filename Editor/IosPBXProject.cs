@@ -45,15 +45,15 @@ public class IosPBXProject: IDisposable
         Save();
     }
 
-    public void AddFrameworkToProjectCoreHaptics(bool weak=false) => AddFramework("CoreHaptics.framework", weak);
-    public void AddFrameworkToProjectAdServices(bool weak=false) => AddFramework("AdServices.framework", weak);
-    public void AddFrameworkToProjectAppTrackingTransparency(bool weak=false) => AddFramework("AppTrackingTransparency.framework", weak);
-    public void AddFrameworkToProjectAdSupport(bool weak=false) => AddFramework("AdSupport.framework", weak);
-    public void AddFrameworkToProjectCoreTelephony(bool weak=false) => AddFramework("CoreTelephony.framework", weak);
-    public void AddFrameworkToProjectSecurity(bool weak=false) => AddFramework("Security.framework", weak);
-    public void AddFrameworkToProjectSystemConfiguration(bool weak=false) => AddFramework("SystemConfiguration.framework", weak);
-    public void AddFrameworkToProjectLibCPP(bool weak=false) => AddFramework("libc++.tbd", weak);
-    public void AddFrameworkToProjectLibZ(bool weak=false) => AddFramework("libz.tbd", weak);
+    public void AddFrameworkCoreHaptics(bool weak=false) => AddFramework("CoreHaptics.framework", weak);
+    public void AddFrameworkAdServices(bool weak=false) => AddFramework("AdServices.framework", weak);
+    public void AddFrameworkAppTrackingTransparency(bool weak=false) => AddFramework("AppTrackingTransparency.framework", weak);
+    public void AddFrameworkAdSupport(bool weak=false) => AddFramework("AdSupport.framework", weak);
+    public void AddFrameworkCoreTelephony(bool weak=false) => AddFramework("CoreTelephony.framework", weak);
+    public void AddFrameworkSecurity(bool weak=false) => AddFramework("Security.framework", weak);
+    public void AddFrameworkSystemConfiguration(bool weak=false) => AddFramework("SystemConfiguration.framework", weak);
+    public void AddFrameworkLibCPP(bool weak=false) => AddFramework("libc++.tbd", weak);
+    public void AddFrameworkLibZ(bool weak=false) => AddFramework("libz.tbd", weak);
     public void AddFramework(string name, bool weak=false) => project.AddFrameworkToProject(targetGuid, name, weak);
 
     public void AddBuildPropertyOtherLdFlags(string value="-ObjC") => AddBuildProperty("OTHER_LDFLAGS", value);

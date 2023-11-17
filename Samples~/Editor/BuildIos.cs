@@ -13,19 +13,19 @@ namespace SaintsBuild.Samples.Editor
             #region IosPBXProject
             using (IosPBXProject iosPBXProject = new IosPBXProject(target, path)) {
                 // AddFramework
-                iosPBXProject.AddFrameworkToProjectCoreHaptics();
-                iosPBXProject.AddFrameworkToProjectAdServices();
-                iosPBXProject.AddFrameworkToProjectAppTrackingTransparency();
-                iosPBXProject.AddFrameworkToProjectAdSupport();
-                iosPBXProject.AddFrameworkToProjectCoreTelephony();
-                iosPBXProject.AddFrameworkToProjectSecurity();
-                iosPBXProject.AddFrameworkToProjectSystemConfiguration();
-                iosPBXProject.AddFrameworkToProjectLibCPP();
-                iosPBXProject.AddFrameworkToProjectLibZ();
+                iosPBXProject.AddFrameworkCoreHaptics();
+                iosPBXProject.AddFrameworkAdServices();
+                iosPBXProject.AddFrameworkAppTrackingTransparency();
+                iosPBXProject.AddFrameworkAdSupport();
+                iosPBXProject.AddFrameworkCoreTelephony();
+                iosPBXProject.AddFrameworkSecurity();
+                iosPBXProject.AddFrameworkSystemConfiguration();
+                iosPBXProject.AddFrameworkLibCPP();
+                iosPBXProject.AddFrameworkLibZ();
                 iosPBXProject.AddFramework("YourFrameWorkName");
 
                 // AddBuildProperty
-                iosPBXProject.AddBuildPropertyOtherLdFlags();
+                iosPBXProject.AddBuildPropertyOtherLdFlags("-ObjC");
                 iosPBXProject.AddBuildProperty("yourBuildName", "params");
 
                 // AddInAppPurchase
@@ -45,7 +45,7 @@ namespace SaintsBuild.Samples.Editor
             #region Plist
             using (IosPlist iosPlist = new IosPlist(target, path)) {
                 // urlScheme
-                iosPlist.PListAddUrlSchemes(new[]
+                iosPlist.AddUrlSchemes(new[]
                 {
                     new IosPlist.UrlScheme
                     {
@@ -62,12 +62,12 @@ namespace SaintsBuild.Samples.Editor
                 });
 
                 // ITSAppUsesNonExemptEncryption
-                iosPlist.PListSetITSAppUsesNonExemptEncryption(false);
+                iosPlist.SetITSAppUsesNonExemptEncryption(false);
 
                 // if you manually installed the Facebook SDK (not Unity Package)
-                iosPlist.PListSetString("FacebookAppID", "123412341234");
-                iosPlist.PListSetString("FacebookDisplayName", "fbAppName");
-                iosPlist.PListSetString("FacebookClientToken", "token_1234");
+                iosPlist.SetString("FacebookAppID", "123412341234");
+                iosPlist.SetString("FacebookDisplayName", "fbAppName");
+                iosPlist.SetString("FacebookClientToken", "token_1234");
                 iosPlist.PListSetBoolean("FacebookAutoLogAppEventsEnabled", true);
                 iosPlist.PListSetBoolean("FacebookAdvertiserIDCollectionEnabled", true);
             }

@@ -38,7 +38,7 @@ public class IosPlist: IDisposable
         public string[] CFBundleURLSchemes;
     }
 
-    public void PListAddUrlSchemes(IEnumerable<UrlScheme> urlSchemes)
+    public void AddUrlSchemes(IEnumerable<UrlScheme> urlSchemes)
     {
         PlistElementArray cfBundleURLTypes = plistElementDict.CreateArray("CFBundleURLTypes");
 
@@ -56,11 +56,11 @@ public class IosPlist: IDisposable
         }
     }
 
-    public void PListSetITSAppUsesNonExemptEncryption(bool value=true) => plistElementDict.SetBoolean("ITSAppUsesNonExemptEncryption", value);
+    public void SetITSAppUsesNonExemptEncryption(bool value=true) => plistElementDict.SetBoolean("ITSAppUsesNonExemptEncryption", value);
     public void PListSetBoolean(string name, bool value) => plistElementDict.SetBoolean(name, value);
-    public void PListSetString(string name, string value) => plistElementDict.SetString(name, value);
-    public void PListSetInteger(string name, int value) => plistElementDict.SetInteger(name, value);
-    public void PListSetReal(string name, float value) => plistElementDict.SetReal(name, value);
-    public void PListSetDate(string name, DateTime value) => plistElementDict.SetDate(name, value);
+    public void SetString(string name, string value) => plistElementDict.SetString(name, value);
+    public void SetInteger(string name, int value) => plistElementDict.SetInteger(name, value);
+    public void SetReal(string name, float value) => plistElementDict.SetReal(name, value);
+    public void SetDate(string name, DateTime value) => plistElementDict.SetDate(name, value);
 }
 #endif
