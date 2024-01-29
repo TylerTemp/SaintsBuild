@@ -2,6 +2,37 @@
 
 `SaintsBuild` is a Unity build (packing) tool for Unity, mainly focused on android and ios.
 
+## Installation ##
+
+*   Using [OpenUPM](https://openupm.com/)
+
+    ```bash
+    openupm install today.comes.saintsbuild
+    ```
+
+*   Using git upm:
+
+    add to `Packages/manifest.json` in your project
+
+    ```javascript
+    {
+        "dependencies": {
+            "today.comes.saintsbuild": "https://github.com/TylerTemp/SaintsBuild.git",
+            // your other dependencies...
+        }
+    }
+    ```
+
+*   Using a `unitypackage`:
+
+    Go to the [Release Page](https://github.com/TylerTemp/SaintsBuild/releases) to download a desired version of `unitypackage` and import it to your project
+
+*   Using a git submodule:
+
+    ```bash
+    git submodule add https://github.com/TylerTemp/SaintsBuild.git Assets/SaintsBuild
+    ```
+
 ## Usage ##
 
 ### Android ###
