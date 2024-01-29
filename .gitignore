@@ -1,5 +1,4 @@
 .idea
-/dist
 /Library
 /Logs
 /obj
@@ -9,7 +8,6 @@
 /Temp
 /.dist
 /ProjectSettings
-/RADEME.md.meta
-/package.json.meta
 /Samples
 /Samples.meta
+*.meta linguist-generated=true
