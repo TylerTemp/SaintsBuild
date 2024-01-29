@@ -126,3 +126,89 @@ namespace SaintsBuild.Samples.Editor
 }
 #endif
 ```
+
+### IPostProcessScene ###
+
+Get a callback when building a scene or play a scene. Useful when you have some debug tools and want to clean it before playing or building.
+
+**Set Up**
+
+Put this in any of your editor script:
+
+```csharp
+using UnityEditor.Callbacks;
+
+[PostProcessScene]
+public static void OnPostProcessScene()
+{
+    Debug.Log("call SaintsBuild OnPostProcessScene");
+    SaintsBuild.Editor.Callbacks.OnPostProcessScene();
+}
+```
+
+**Usage**
+
+Clean Up:
+
+```csharp
+public class CleanSlider: MonoBehaviour, IPostProcessScene
+{
+    public Slider slider;
+
+#if UNITY_EDITOR  // don't forget this
+    public void EditorOnPostProcessScene(bool isBuilding)
+    {
+        slider.value = 0;
+    }
+#endif
+}
+```
+
+Advanced Usage:
+
+```csharp
+public class TextContainer : MonoBehaviour, IPostProcessScene
+{
+    public GameObject prefab;
+    public Transform container;
+
+    private void Awake()
+    {
+#if UNITY_EDITOR
+        // in build, the clean process will happen before build
+        // but in play mode, we need to call it manually
+        CleanUpExample();
+#endif
+
+        // other works
+        foreach (int index in Enumerable.Range(0, 5))
+        {
+            GameObject example = Instantiate(prefab, container);
+            example.GetComponent<Text>().text = $"Runtime Awake created {index}";
+        }
+    }
+
+#if UNITY_EDITOR
+    public void EditorOnPostProcessScene(bool isBuilding)
+    {
+        if (isBuilding)  // in building process, Unity will call this function and apply changes to build result
+        {
+            CleanUpExample();
+        }
+        else  // in play mode, unity will call Awake first, then call this function. Changes will be revoked after exiting play mode
+        {
+            // deal conflict with Awake
+        }
+    }
+
+    private void CleanUpExample()
+    {
+        foreach (Transform eachExample in container.Cast<Transform>().ToArray())
+        {
+            Debug.Log(eachExample.gameObject.name);
+            DestroyImmediate(eachExample.gameObject);
+        }
+    }
+#endif
+}
+```
