@@ -50,6 +50,9 @@ namespace SaintsBuild.Samples.Editor
         public static void OnPostGenerateGradleAndroidProject(string path)
         {
             using AndroidAppManifestBuild androidAppManifest = new AndroidAppManifestBuild(path);
+            
+            // required for android 12 if you have activity alias etc:
+            androidAppManifest.SetApplicationAttribute("exported", "true");
 
             androidAppManifest.SetApplicationTheme("dark");
 
@@ -141,8 +144,8 @@ namespace SaintsBuild.Samples.Editor
                 iosPlist.SetString("FacebookAppID", "123412341234");
                 iosPlist.SetString("FacebookDisplayName", "fbAppName");
                 iosPlist.SetString("FacebookClientToken", "token_1234");
-                iosPlist.PListSetBoolean("FacebookAutoLogAppEventsEnabled", true);
-                iosPlist.PListSetBoolean("FacebookAdvertiserIDCollectionEnabled", true);
+                iosPlist.SetBoolean("FacebookAutoLogAppEventsEnabled", true);
+                iosPlist.SetBoolean("FacebookAdvertiserIDCollectionEnabled", true);
             }
             #endregion
 

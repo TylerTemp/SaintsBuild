@@ -2,13 +2,15 @@
     "name": "today.comes.saintsbuild.Editor",
     "rootNamespace": "",
     "references": [
-    "GUID:cb862f9340462e843aff1ed87b152e74"],
-    "includePlatforms": [],
+        "GUID:cb862f9340462e843aff1ed87b152e74"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
-    "precompiledReferences": [
-    ],
+    "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],

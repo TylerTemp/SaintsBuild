@@ -57,7 +57,7 @@ public class IosPlist: IDisposable
     }
 
     public void SetITSAppUsesNonExemptEncryption(bool value=true) => plistElementDict.SetBoolean("ITSAppUsesNonExemptEncryption", value);
-    public void PListSetBoolean(string name, bool value) => plistElementDict.SetBoolean(name, value);
+    public void SetBoolean(string name, bool value) => plistElementDict.SetBoolean(name, value);
     public void SetString(string name, string value) => plistElementDict.SetString(name, value);
     public void SetInteger(string name, int value) => plistElementDict.SetInteger(name, value);
     public void SetReal(string name, float value) => plistElementDict.SetReal(name, value);

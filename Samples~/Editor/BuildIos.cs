@@ -68,8 +68,8 @@ namespace SaintsBuild.Samples.Editor
                 iosPlist.SetString("FacebookAppID", "123412341234");
                 iosPlist.SetString("FacebookDisplayName", "fbAppName");
                 iosPlist.SetString("FacebookClientToken", "token_1234");
-                iosPlist.PListSetBoolean("FacebookAutoLogAppEventsEnabled", true);
-                iosPlist.PListSetBoolean("FacebookAdvertiserIDCollectionEnabled", true);
+                iosPlist.SetBoolean("FacebookAutoLogAppEventsEnabled", true);
+                iosPlist.SetBoolean("FacebookAdvertiserIDCollectionEnabled", true);
             }
             #endregion
 

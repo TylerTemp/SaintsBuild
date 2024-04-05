@@ -1,6 +1,7 @@
 ﻿#if UNITY_ANDROID
 using SaintsBuild.Editor;
 using UnityEditor.Callbacks;
+using UnityEngine;
 
 namespace SaintsBuild.Samples.Editor
 {
@@ -10,6 +11,10 @@ namespace SaintsBuild.Samples.Editor
         public static void OnPostGenerateGradleAndroidProject(string path)
         {
             using AndroidAppManifestBuild androidAppManifest = new AndroidAppManifestBuild(path);
+
+            // required for android 12 if you have activity alias etc:
+            Debug.Log($"Add android:exported=true");
+            androidAppManifest.SetApplicationAttribute("exported", "true");
 
             androidAppManifest.SetApplicationTheme("dark");
 

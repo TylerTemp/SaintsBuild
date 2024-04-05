@@ -65,7 +65,12 @@ namespace SaintsBuild.Editor
         }
 
         public void SetApplicationTheme(string appTheme) {
-            applicationElement.Attributes.Append(CreateAndroidAttribute("theme", appTheme));
+            // applicationElement.Attributes.Append(CreateAndroidAttribute("theme", appTheme));
+            SetApplicationAttribute("theme", appTheme);
+        }
+
+        public void SetApplicationAttribute(string key, string value) {
+            applicationElement.Attributes.Append(CreateAndroidAttribute(key, value));
         }
 
         public void SetStartingActivityName(string activityName) {
