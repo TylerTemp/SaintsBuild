@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SaintsBuild.Editor
 {
-    public class AndroidAppManifestBuild: IDisposable
+    public class AndroidManifest: IDisposable
     {
         private const string AndroidXmlNamespace = "http://schemas.android.com/apk/res/android";
         // ReSharper disable once MemberCanBePrivate.Global
@@ -23,7 +23,7 @@ namespace SaintsBuild.Editor
         // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public XmlElement applicationElement;
 
-        public AndroidAppManifestBuild(string basePath)
+        public AndroidManifest(string basePath)
         {
             path = Path.Combine(new[] { basePath, "src", "main", "AndroidManifest.xml" });
             XmlDocument document = new XmlDocument();
@@ -80,6 +80,10 @@ namespace SaintsBuild.Editor
 
         public void SetHardwareAcceleration() {
             GetActivityWithLaunchIntent().Attributes!.Append(CreateAndroidAttribute("hardwareAccelerated", "true"));
+        }
+
+        public void SetActivityWithLauncherIntentAttribute(string key, string value) {
+            GetActivityWithLaunchIntent().Attributes!.Append(CreateAndroidAttribute(key, value));
         }
 
         public void SetBillingPermission(int maxSdkVersion=-1)  => SetPermissionAttribute("BILLING", maxSdkVersion);

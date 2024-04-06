@@ -49,10 +49,10 @@ namespace SaintsBuild.Samples.Editor
         [PostProcessBuild(1)]
         public static void OnPostGenerateGradleAndroidProject(string path)
         {
-            using AndroidAppManifestBuild androidAppManifest = new AndroidAppManifestBuild(path);
+            using AndroidManifest androidAppManifest = new AndroidManifest(path);
             
             // required for android 12 if you have activity alias etc:
-            androidAppManifest.SetApplicationAttribute("exported", "true");
+            androidManifest.SetActivityWithLauncherIntentAttribute("exported", "true");
 
             androidAppManifest.SetApplicationTheme("dark");
 

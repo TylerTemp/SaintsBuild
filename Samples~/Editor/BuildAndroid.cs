@@ -10,22 +10,22 @@ namespace SaintsBuild.Samples.Editor
         [PostProcessBuild(1)]
         public static void OnPostGenerateGradleAndroidProject(string path)
         {
-            using AndroidAppManifestBuild androidAppManifest = new AndroidAppManifestBuild(path);
+            using AndroidManifest androidManifest = new AndroidManifest(path);
 
             // required for android 12 if you have activity alias etc:
             Debug.Log($"Add android:exported=true");
-            androidAppManifest.SetApplicationAttribute("exported", "true");
+            androidManifest.SetActivityWithLauncherIntentAttribute("exported", "true");
 
-            androidAppManifest.SetApplicationTheme("dark");
+            androidManifest.SetApplicationTheme("dark");
 
-            androidAppManifest.SetStartingActivityName("CustomActivity");
+            androidManifest.SetStartingActivityName("CustomActivity");
 
-            androidAppManifest.SetHardwareAcceleration();
+            androidManifest.SetHardwareAcceleration();
 
-            androidAppManifest.SetBillingPermission();
-            androidAppManifest.SetVibratePermission();
+            androidManifest.SetBillingPermission();
+            androidManifest.SetVibratePermission();
             // other you need
-            androidAppManifest.SetPermissionAttribute("WRITE_EXTERNAL_STORAGE", 18);
+            androidManifest.SetPermissionAttribute("WRITE_EXTERNAL_STORAGE", 18);
         }
     }
 }
