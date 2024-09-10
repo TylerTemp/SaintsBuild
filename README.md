@@ -1,10 +1,13 @@
 # SaintsBuild #
 
+[![openupm](https://img.shields.io/npm/v/today.comes.saintsbuild?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/today.comes.saintsbuild/)
+[![openupm](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Ftoday.comes.saintsbuild)](https://openupm.com/packages/today.comes.saintsbuild/)
+
 `SaintsBuild` is a Unity build (packing) tool for Unity, mainly focused on android and ios.
 
 ## Installation ##
 
-*   Using [OpenUPM](https://openupm.com/)
+*   Using [OpenUPM](https://openupm.com/packages/today.comes.saintsbuild/)
 
     ```bash
     openupm install today.comes.saintsbuild
@@ -32,6 +35,17 @@
     ```bash
     git submodule add https://github.com/TylerTemp/SaintsBuild.git Assets/SaintsBuild
     ```
+    
+## Change Log##
+
+**1.0.4**
+
+1.  iOS: Rename `IosPlist.PListSetBoolean` to `IosPlist.SetBoolean`
+2.  Android: Rename `AndroidAppManifestBuild` to `AndroidManifest`
+3.  Android: Add `AndroidManifest.SetApplicationAttribute`
+4.  Android: Add `AndroidManifest.SetActivityWithLauncherIntentAttribute`
+
+See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/CHANGELOG.md).
 
 ## Usage ##
 
