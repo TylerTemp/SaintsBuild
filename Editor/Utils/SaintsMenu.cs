@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 
 namespace SaintsBuild.Editor.Utils
@@ -23,31 +24,53 @@ namespace SaintsBuild.Editor.Utils
 
             foreach (BuildTargetGroup grp in targets.Where(each => each != BuildTargetGroup.Unknown))
             {
-                string defines;
-                try
-                {
-                    defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(grp);
-                }
-                catch (ArgumentException)
-                {
-                    continue;
-                }
-                if (!defines.Contains(newDefineCompileConstant))
-                {
-                    if (defines.Length > 0)
-                        defines += ";";
-
-                    defines += newDefineCompileConstant;
-                    try
-                    {
-                        PlayerSettings.SetScriptingDefineSymbolsForGroup(grp, defines);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
-                }
+                AddCompileForGroup(newDefineCompileConstant, grp);
             }
+        }
+
+        private static void AddCompileForGroup(string newDefineCompileConstant, BuildTargetGroup grp)
+        {
+#if UNITY_6000_0_OR_NEWER
+            try
+            {
+                PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(grp),
+                    newDefineCompileConstant);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+#else
+            string defines;
+            try
+            {
+                defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(grp);
+            }
+            catch (ArgumentException)
+            {
+                return;
+            }
+
+            if (defines.Contains(newDefineCompileConstant))
+            {
+                return;
+            }
+
+            if (defines.Length > 0)
+            {
+                defines += ";";
+            }
+
+            defines += newDefineCompileConstant;
+            try
+            {
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(grp, defines);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+#endif
         }
 
         // ReSharper disable once UnusedMember.Local

@@ -1,9 +1,7 @@
-﻿namespace SaintsBuild
+namespace SaintsBuild
 {
-    public interface IPostProcessScene
+    public interface IPostProcessScene: IPostProcess
     {
-#if UNITY_EDITOR
-        void EditorOnPostProcessScene(bool isBuilding);
-#endif
+
     }
 }

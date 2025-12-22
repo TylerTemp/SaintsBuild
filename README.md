@@ -179,9 +179,16 @@ namespace SaintsBuild.Samples.Editor
 
 Get a callback when building a scene or play a scene. Useful when you have some debug tools and want to clean it before playing or building.
 
+Note: 
+
+1.  For ScriptableObject, this might get the changed data saved on running
+2.  For building, the callback is called on build process (so the change happens already before `Awake`). However, in editor runtime (not built runtime), this happens **AFTER** `Awake`
+
 **Set Up**
 
-Put this in any of your editor script:
+Add macro `SAINTSBUILD_POST_PROCESS_SCENE`
+
+Or, put this in any of your editor script:
 
 ```csharp
 using UnityEditor.Callbacks;
@@ -199,7 +206,7 @@ public static void OnPostProcessScene()
 Clean Up:
 
 ```csharp
-public class CleanSlider: MonoBehaviour, IPostProcessScene
+public class CleanSlider: MonoBehaviour, IPostProcess
 {
     public Slider slider;
 
@@ -215,7 +222,7 @@ public class CleanSlider: MonoBehaviour, IPostProcessScene
 Advanced Usage:
 
 ```csharp
-public class TextContainer : MonoBehaviour, IPostProcessScene
+public class TextContainer : MonoBehaviour, IPostProcess
 {
     public GameObject prefab;
     public Transform container;

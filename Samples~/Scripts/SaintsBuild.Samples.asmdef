@@ -1,15 +1,14 @@
 {
-    "name": "today.comes.saintsbuild.Editor",
-    "rootNamespace": "",
+    "name": "SaintsBuild.Samples",
+    "rootNamespace": "SaintsBuild",
     "references": [
-        "GUID:cb862f9340462e843aff1ed87b152e74"
+        "GUID:cb862f9340462e843aff1ed87b152e74",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": true,
+    "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],

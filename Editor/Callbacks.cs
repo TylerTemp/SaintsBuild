@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿#if UNITY_EDITOR
+using System.Collections.Generic;
+using System.Linq;
+using SaintsBuild.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 #if SAINTSBUILD_POST_PROCESS_SCENE
@@ -9,19 +13,49 @@ namespace SaintsBuild.Editor
 {
     public static class Callbacks
     {
+        private static bool _watchListProcessed;
+
         // add this to your Editor.YouStaticMethod and call this function
 #if SAINTSBUILD_POST_PROCESS_SCENE
         [PostProcessScene]
 #endif
         public static void OnPostProcessScene()
         {
-#if UNITY_EDITOR
+
+
             bool isBuilding = !Application.isPlaying;
 
             Scene scene = SceneManager.GetActiveScene();
 #if SAINTSBUILD_DEBUG && SAINTSBUILD_DEBUG_CALLBACKS
             Debug.Log($"#PostProcessScene# checking scene {scene.name}");
 #endif
+
+            List<IPostProcess> toProcess = new List<IPostProcess>();
+            if (!_watchListProcessed)
+            {
+                _watchListProcessed = true;
+                AssetPostprocessorWatcherList assetPostprocessorWatcherList =
+                    AssetDatabase.LoadAssetAtPath<AssetPostprocessorWatcherList>(
+                        "Assets/Editor Default Resources/SaintsBuild/AssetPostprocessorWatcherList.asset");
+                if (assetPostprocessorWatcherList != null)
+                {
+                    foreach (Component component in assetPostprocessorWatcherList.components)
+                    {
+                        if (component != null && component is IPostProcess compPostProcess)
+                        {
+                            toProcess.Add(compPostProcess);
+                        }
+                    }
+
+                    foreach (ScriptableObject so in assetPostprocessorWatcherList.scriptableObjs)
+                    {
+                        if (so != null && so is IPostProcess soPostProcess)
+                        {
+                            toProcess.Add(soPostProcess);
+                        }
+                    }
+                }
+            }
 
             foreach (GameObject rootGameObject in scene.GetRootGameObjects())
             {
@@ -36,8 +70,8 @@ namespace SaintsBuild.Editor
                         if (transformsInChild)
                         {
                             // ReSharper disable once SuspiciousTypeConversion.Global
-                            foreach (IPostProcessScene onSceneBuildCallback in transformsInChild
-                                         .GetComponents<MonoBehaviour>().OfType<IPostProcessScene>())
+                            foreach (IPostProcess onSceneBuildCallback in transformsInChild
+                                         .GetComponents<MonoBehaviour>().OfType<IPostProcess>())
                             {
                                 if (onSceneBuildCallback is Component component && component && component.gameObject)
                                 {
@@ -45,7 +79,8 @@ namespace SaintsBuild.Editor
                                     Debug.Log(
                                         $"#PostProcessScene# OnPostProcessScene from scene {scene.name}: {onSceneBuildCallback} {onSceneBuildCallback.GetType().Name}");
 #endif
-                                    onSceneBuildCallback.EditorOnPostProcessScene(isBuilding);
+                                    toProcess.Add(onSceneBuildCallback);
+                                    // onSceneBuildCallback.EditorOnPostProcessScene(isBuilding);
                                 }
                             }
                         }
@@ -53,12 +88,17 @@ namespace SaintsBuild.Editor
                 }
             }
 
+            foreach (IPostProcess postProcess in toProcess)
+            {
+                postProcess.EditorOnPostProcessScene(isBuilding);
+            }
+
 #if SAINTSBUILD_DEBUG && SAINTSBUILD_DEBUG_CALLBACKS
             Debug.Log(
                 $"#PostProcessScene# OnPostProcessScene from scene {scene.name} finished");
 #endif
-
-#endif
         }
     }
 }
+
+#endif

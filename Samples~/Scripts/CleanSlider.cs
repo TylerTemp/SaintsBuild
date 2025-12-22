@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace SaintsBuild.Samples.Scripts
+namespace SaintsBuild.Samples
 {
     public class CleanSlider: MonoBehaviour, IPostProcessScene
     {
