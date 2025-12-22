@@ -1,5 +1,7 @@
 ﻿## 1.0.5
 
+1.  Renamed to `IPostProcess`
+2.  `IPostProcess` now works for prefab & ScriptableObject too
 
 ## 1.0.4
 
