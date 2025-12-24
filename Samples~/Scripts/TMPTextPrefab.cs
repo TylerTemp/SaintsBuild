@@ -7,7 +7,7 @@ namespace SaintsBuild.Samples
     {
         public TMP_Text targetRenderer;
 #if UNITY_EDITOR
-        public void EditorOnPostProcessScene(bool isBuilding)
+        public void EditorOnPostProcess(PostProcessInfo postProcessInfo)
         {
             targetRenderer.text = "Build Text Bake!";
         }

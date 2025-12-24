@@ -48,8 +48,13 @@ namespace SaintsBuild.Editor.Utils
             string[] movedAssets,
             string[] movedFromAssetPaths)
         {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                return;
+            }
+
             List<ScriptableObject> toAddSo = new List<ScriptableObject>();
-            List<Component> toAddComponents = new List<Component>();
+            List<PrefabInfo> toAddComponents = new List<PrefabInfo>();
 
             List<int> toDeleteSoIndex = new List<int>();
             List<int> toDeleteComponentIndex = new List<int>();
@@ -64,7 +69,7 @@ namespace SaintsBuild.Editor.Utils
                     if (so != null)
                     {
                         // ReSharper disable once SuspiciousTypeConversion.Global
-                        if (so is IPostProcess && !watchedList.scriptableObjs.Contains(so))
+                        if (so is IPostProcess && !toAddSo.Contains(so) && !watchedList.scriptableObjs.Contains(so))
                         {
                             toAddSo.Add(so);
                         }
@@ -73,14 +78,22 @@ namespace SaintsBuild.Editor.Utils
                 else if (importedAsset.EndsWith(".prefab"))
                 {
                     GameObject go = AssetDatabase.LoadAssetAtPath<GameObject>(importedAsset);
+                    // Debug.Log($"{go}: {importedAsset}");
                     if (go != null)
                     {
                         foreach (Component component in go.GetComponentsInChildren<Component>(true))
                         {
+                            // Debug.Log($"comp {component}: {component is IPostProcess}, {toAddComponents.All(each => each.root != go && each.component != component)}");
                             // ReSharper disable once SuspiciousTypeConversion.Global
-                            if (component != null && component is IPostProcess && !toAddComponents.Contains(component))
+                            var checkContent = new PrefabInfo
                             {
-                                toAddComponents.Add(component);
+                                root = go,
+                                component = component,
+                            };
+                            if (component != null && component is IPostProcess && !toAddComponents.Contains(checkContent) && !watchedList.prefabInfos.Contains(checkContent))
+                            {
+                                // Debug.Log($"{checkContent} not in {string.Join(",", toAddComponents)}");
+                                toAddComponents.Add(checkContent);
                             }
                         }
                     }
@@ -88,9 +101,9 @@ namespace SaintsBuild.Editor.Utils
             }
 
             // check delete
-            for (int index = watchedList.components.Length - 1; index >= 0; index--)
+            for (int index = watchedList.prefabInfos.Length - 1; index >= 0; index--)
             {
-                Component comp = watchedList.components[index];
+                Component comp = watchedList.prefabInfos[index].component;
                 // ReSharper disable once SuspiciousTypeConversion.Global
                 if (comp == null || comp is not IPostProcess)
                 {
@@ -127,15 +140,16 @@ namespace SaintsBuild.Editor.Utils
                     soPropItem.objectReferenceValue = target;
                 }
 
-                SerializedProperty compPropArray = so.FindProperty(nameof(AssetPostprocessorWatcherList.components));
+                SerializedProperty compPropArray = so.FindProperty(nameof(AssetPostprocessorWatcherList.prefabInfos));
 
-                foreach (Component target in toAddComponents)
+                foreach (PrefabInfo target in toAddComponents)
                 {
                     int toAddIndex = compPropArray.arraySize;
                     compPropArray.arraySize = toAddIndex + 1;
                     SerializedProperty compPropItem = compPropArray.GetArrayElementAtIndex(toAddIndex);
                     Debug.Log($"Add {target}@[{toAddIndex}] to watched comp");
-                    compPropItem.objectReferenceValue = target;
+                    compPropItem.FindPropertyRelative(nameof(PrefabInfo.root)).objectReferenceValue = target.root;
+                    compPropItem.FindPropertyRelative(nameof(PrefabInfo.component)).objectReferenceValue = target.component;
                 }
 
                 foreach (int toDeleteComp in toDeleteComponentIndex)

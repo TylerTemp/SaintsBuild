@@ -4,7 +4,7 @@ namespace SaintsBuild.Editor.Utils
 {
     public class AssetPostprocessorWatcherList: ScriptableObject
     {
-        public Component[] components = {};
+        public PrefabInfo[] prefabInfos = {};
         public ScriptableObject[] scriptableObjs = {};
     }
 }

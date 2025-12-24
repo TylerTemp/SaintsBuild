@@ -3,7 +3,7 @@
     public interface IPostProcess
     {
 #if UNITY_EDITOR
-        void EditorOnPostProcessScene(bool isBuilding);
+        void EditorOnPostProcess(PostProcessInfo postProcessInfo);
 #endif
     }
 }

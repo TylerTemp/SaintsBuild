@@ -211,7 +211,7 @@ public class CleanSlider: MonoBehaviour, IPostProcess
     public Slider slider;
 
 #if UNITY_EDITOR  // don't forget this
-    public void EditorOnPostProcessScene(bool isBuilding)
+    public void EditorOnPostProcess(PostProcessInfo postProcessInfo)
     {
         slider.value = 0;
     }
@@ -244,9 +244,9 @@ public class TextContainer : MonoBehaviour, IPostProcess
     }
 
 #if UNITY_EDITOR
-    public void EditorOnPostProcessScene(bool isBuilding)
+    public void EditorOnPostProcess(PostProcessInfo postProcessInfo)
     {
-        if (isBuilding)  // in building process, Unity will call this function and apply changes to build result
+        if (postProcessInfo.IsBuilding)  // in building process, Unity will call this function and apply changes to build result
         {
             CleanUpExample();
         }
@@ -266,4 +266,33 @@ public class TextContainer : MonoBehaviour, IPostProcess
     }
 #endif
 }
+```
+
+Using on a prefab which can also be in scene:
+
+```csharp
+    public class SubContent : MonoBehaviour, IPostProcess
+    {
+#if UNITY_EDITOR
+        public void EditorOnPostProcess(PostProcessInfo postProcessInfo)
+        {
+            switch (postProcessInfo.Type)
+            {
+                case PostProcessType.SceneGameObject:  // We can safely destroy unnecessary
+                    DestroyImmediate(gameObject);
+                    break;
+                case PostProcessType.Prefab:
+                    if (postProcessInfo.IsBuilding)  // only destroy on build
+                    {
+                        DestroyImmediate(gameObject);
+                    }
+                    else  // otherwise, hide it so we don't destroy the prefab and save it
+                    {
+                        gameObject.SetActive(false);
+                    }
+                    break;
+            }
+        }
+#endif
+    }
 ```

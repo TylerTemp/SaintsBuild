@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SaintsBuild.Editor.Utils;
@@ -21,8 +22,6 @@ namespace SaintsBuild.Editor
 #endif
         public static void OnPostProcessScene()
         {
-
-
             bool isBuilding = !Application.isPlaying;
 
             Scene scene = SceneManager.GetActiveScene();
@@ -30,7 +29,8 @@ namespace SaintsBuild.Editor
             Debug.Log($"#PostProcessScene# checking scene {scene.name}");
 #endif
 
-            List<IPostProcess> toProcess = new List<IPostProcess>();
+            List<(PostProcessInfo info, IPostProcess process)> toProcessNormal = new List<(PostProcessInfo, IPostProcess)>();
+            List<PrefabInfo> toProcessPrefabs = new List<PrefabInfo>();
             if (!_watchListProcessed)
             {
                 _watchListProcessed = true;
@@ -39,11 +39,11 @@ namespace SaintsBuild.Editor
                         "Assets/Editor Default Resources/SaintsBuild/AssetPostprocessorWatcherList.asset");
                 if (assetPostprocessorWatcherList != null)
                 {
-                    foreach (Component component in assetPostprocessorWatcherList.components)
+                    foreach (PrefabInfo prefabInfo in assetPostprocessorWatcherList.prefabInfos)
                     {
-                        if (component != null && component is IPostProcess compPostProcess)
+                        if (prefabInfo.root != null && prefabInfo.component != null && prefabInfo.component is IPostProcess compPostProcess)
                         {
-                            toProcess.Add(compPostProcess);
+                            toProcessPrefabs.Add(prefabInfo);
                         }
                     }
 
@@ -51,7 +51,14 @@ namespace SaintsBuild.Editor
                     {
                         if (so != null && so is IPostProcess soPostProcess)
                         {
-                            toProcess.Add(soPostProcess);
+                            toProcessNormal.Add((new PostProcessInfo(
+                                isBuilding,
+                                PostProcessType.ScriptableObject,
+                                "",
+                                null,
+                                null,
+                                so
+                                ), soPostProcess));
                         }
                     }
                 }
@@ -79,7 +86,14 @@ namespace SaintsBuild.Editor
                                     Debug.Log(
                                         $"#PostProcessScene# OnPostProcessScene from scene {scene.name}: {onSceneBuildCallback} {onSceneBuildCallback.GetType().Name}");
 #endif
-                                    toProcess.Add(onSceneBuildCallback);
+                                    toProcessNormal.Add((new PostProcessInfo(
+                                            isBuilding,
+                                            PostProcessType.SceneGameObject,
+                                            "",
+                                            component.gameObject,
+                                            component,
+                                            null
+                                        ), onSceneBuildCallback));
                                     // onSceneBuildCallback.EditorOnPostProcessScene(isBuilding);
                                 }
                             }
@@ -88,15 +102,67 @@ namespace SaintsBuild.Editor
                 }
             }
 
-            foreach (IPostProcess postProcess in toProcess)
+            foreach ((PostProcessInfo info, IPostProcess process) in toProcessNormal)
             {
-                postProcess.EditorOnPostProcessScene(isBuilding);
+                process.EditorOnPostProcess(info);
+            }
+
+            foreach (IGrouping<GameObject, PrefabInfo> grouping in toProcessPrefabs.GroupBy(each => each.root))
+            {
+                string assetPath = AssetDatabase.GetAssetPath(grouping.Key);
+                GameObject root = PrefabUtility.LoadPrefabContents(assetPath);
+
+                foreach (PrefabInfo info in grouping)
+                {
+                    string hierarchyPath = GetTransformPath(info.component.transform);
+                    // Debug.Log($"prefab try processing {info.root}@{hierarchyPath}");
+                    Transform targetTransform = string.IsNullOrEmpty(hierarchyPath)? root.transform: root.transform.Find(hierarchyPath);
+                    Type rawType = info.component.GetType();
+
+                    foreach (Component component in targetTransform.GetComponents<Component>())
+                    {
+                        if (component.GetType() == rawType && component is IPostProcess postProcess)  // strict equal
+                        {
+                            // Debug.Log($"process {component} in prefab");
+                            postProcess.EditorOnPostProcess(new PostProcessInfo(
+                                isBuilding,
+                                PostProcessType.Prefab,
+                                assetPath,
+                                root,
+                                component,
+                                null
+                            ));
+                        }
+                    }
+                }
+
+                PrefabUtility.SaveAsPrefabAsset(root, assetPath);
+                PrefabUtility.UnloadPrefabContents(root);
             }
 
 #if SAINTSBUILD_DEBUG && SAINTSBUILD_DEBUG_CALLBACKS
             Debug.Log(
                 $"#PostProcessScene# OnPostProcessScene from scene {scene.name} finished");
 #endif
+        }
+
+        private static string GetTransformPath(Transform t)
+        {
+            List<string> pathSegments = new List<string>
+            {
+                t.name,
+            };
+            // string path = t.name;
+            while (t.parent != null)
+            {
+                t = t.parent;
+                // path = t.name + "/" + path;
+                pathSegments.Insert(0, t.name);
+            }
+
+            pathSegments.RemoveAt(0);
+            return string.Join("/", pathSegments);
+            // return path;
         }
     }
 }

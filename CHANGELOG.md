@@ -1,4 +1,9 @@
-﻿## 1.0.5
+﻿## 1.0.6
+
+1.  Delete `IPostProcessScene`, change callback name of `IPostProcess`
+2.  Support prefab processer
+
+## 1.0.5
 
 1.  Renamed to `IPostProcess`
 2.  `IPostProcess` now works for prefab & ScriptableObject too

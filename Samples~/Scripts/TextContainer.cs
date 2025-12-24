@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace SaintsBuild.Samples
 {
-    public class TextContainer : MonoBehaviour, IPostProcessScene
+    public class TextContainer : MonoBehaviour, IPostProcess
     {
         public GameObject prefab;
         public Transform container;
@@ -26,9 +26,9 @@ namespace SaintsBuild.Samples
         }
 
 #if UNITY_EDITOR
-        public void EditorOnPostProcessScene(bool isBuilding)
+        public void EditorOnPostProcess(PostProcessInfo postProcessInfo)
         {
-            if (isBuilding)  // in building process, Unity will call this function and apply changes to build result
+            if (postProcessInfo.IsBuilding)  // in building process, Unity will call this function and apply changes to build result
             {
                 CleanUpExample();
             }
@@ -42,7 +42,7 @@ namespace SaintsBuild.Samples
         {
             foreach (Transform eachExample in container.Cast<Transform>().ToArray())
             {
-                Debug.Log(eachExample.gameObject.name);
+                // Debug.Log(eachExample.gameObject.name);
                 DestroyImmediate(eachExample.gameObject);
             }
         }
