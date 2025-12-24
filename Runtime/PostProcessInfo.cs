@@ -34,5 +34,7 @@ namespace SaintsBuild
             Component = component;
             ScriptableObject = scriptableObject;
         }
+
+        public bool PrefabDangerousDestroy() => Type == PostProcessType.Prefab && !IsBuilding;
     }
 }
