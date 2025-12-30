@@ -1,4 +1,9 @@
-﻿## 1.0.6
+﻿## 1.0.7
+
+1.  Delete unused `IPostProcessScene`
+2.  Add `postProcessInfo.PrefabDangerousDestroy()` function
+
+## 1.0.6
 
 1.  Delete `IPostProcessScene`, change callback name of `IPostProcess`
 2.  Support prefab processer

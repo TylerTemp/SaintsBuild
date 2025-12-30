@@ -8,21 +8,13 @@ namespace SaintsBuild.Samples
 #if UNITY_EDITOR
         public void EditorOnPostProcess(PostProcessInfo postProcessInfo)
         {
-            switch (postProcessInfo.Type)
+            if (postProcessInfo.PrefabDangerousDestroy())  // hide it so we don't destroy the prefab and save it
             {
-                case PostProcessType.SceneGameObject:  // We can safely destroy unnecessary
-                    DestroyImmediate(gameObject);
-                    break;
-                case PostProcessType.Prefab:
-                    if (postProcessInfo.IsBuilding)  // only destroy on build
-                    {
-                        DestroyImmediate(gameObject);
-                    }
-                    else  // otherwise, hide it so we don't destroy the prefab and save it
-                    {
-                        gameObject.SetActive(false);
-                    }
-                    break;
+                gameObject.SetActive(false);
+            }
+            else  // can safely destroy
+            {
+                DestroyImmediate(gameObject);
             }
         }
 #endif

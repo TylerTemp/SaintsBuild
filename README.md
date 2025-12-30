@@ -175,7 +175,7 @@ namespace SaintsBuild.Samples.Editor
 #endif
 ```
 
-### IPostProcessScene ###
+### IPostProcess ###
 
 Get a callback when building a scene or play a scene. Useful when you have some debug tools and want to clean it before playing or building.
 
@@ -194,10 +194,10 @@ Or, put this in any of your editor script:
 using UnityEditor.Callbacks;
 
 [PostProcessScene]
-public static void OnPostProcessScene()
+public static void OnPostProcess()
 {
-    Debug.Log("call SaintsBuild OnPostProcessScene");
-    SaintsBuild.Editor.Callbacks.OnPostProcessScene();
+    Debug.Log("call SaintsBuild OnPostProcess");
+    SaintsBuild.Editor.Callbacks.OnPostProcess();
 }
 ```
 
@@ -276,21 +276,13 @@ Using on a prefab which can also be in scene:
 #if UNITY_EDITOR
         public void EditorOnPostProcess(PostProcessInfo postProcessInfo)
         {
-            switch (postProcessInfo.Type)
+            if (postProcessInfo.PrefabDangerousDestroy())  // hide it so we don't destroy the prefab and save it
             {
-                case PostProcessType.SceneGameObject:  // We can safely destroy unnecessary
-                    DestroyImmediate(gameObject);
-                    break;
-                case PostProcessType.Prefab:
-                    if (postProcessInfo.IsBuilding)  // only destroy on build
-                    {
-                        DestroyImmediate(gameObject);
-                    }
-                    else  // otherwise, hide it so we don't destroy the prefab and save it
-                    {
-                        gameObject.SetActive(false);
-                    }
-                    break;
+                gameObject.SetActive(false);
+            }
+            else  // can safely destroy
+            {
+                DestroyImmediate(gameObject);
             }
         }
 #endif
