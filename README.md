@@ -36,7 +36,7 @@
     git submodule add https://github.com/TylerTemp/SaintsBuild.git Assets/SaintsBuild
     ```
     
-## Change Log##
+## Change Log ##
 
 **1.0.4**
 
