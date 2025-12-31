@@ -18,8 +18,11 @@ namespace SaintsBuild.Editor.Utils
                     AssetDatabase.LoadAssetAtPath<AssetPostprocessorWatcherList>(
                         "Assets/Editor Default Resources/SaintsBuild/AssetPostprocessorWatcherList.asset");
             }
+
+            const string path = "Assets/Editor Default Resources/SaintsBuild/AssetPostprocessorWatcherList.asset";
+
             // ReSharper disable once InvertIf
-            if (_assetPostprocessorWatcherList == null)
+            if (_assetPostprocessorWatcherList == null && !File.Exists(path))
             {
                 if (!Directory.Exists("Assets/Editor Default Resources"))
                 {
@@ -32,10 +35,10 @@ namespace SaintsBuild.Editor.Utils
                     Debug.Log("Create folder: Assets/Editor Default Resources/SaintsBuild");
                     AssetDatabase.CreateFolder("Assets/Editor Default Resources", "SaintsBuild");
                 }
+
                 _assetPostprocessorWatcherList = ScriptableObject.CreateInstance<AssetPostprocessorWatcherList>();
                 Debug.Log("Create AssetPostprocessorWatcherList");
-                AssetDatabase.CreateAsset(_assetPostprocessorWatcherList,
-                    "Assets/Editor Default Resources/SaintsBuild/AssetPostprocessorWatcherList.asset");
+                AssetDatabase.CreateAsset(_assetPostprocessorWatcherList, path);
                 AssetDatabase.SaveAssets();
             }
 
@@ -60,6 +63,10 @@ namespace SaintsBuild.Editor.Utils
             List<int> toDeleteComponentIndex = new List<int>();
 
             AssetPostprocessorWatcherList watchedList = EnsureAssetPostprocessorWatcherList();
+            if (watchedList == null)
+            {
+                return;
+            }
 
             foreach (string importedAsset in importedAssets)
             {

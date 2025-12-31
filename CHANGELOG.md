@@ -1,4 +1,8 @@
-﻿## 1.0.7
+﻿## 1.0.8
+
+Fix cover config file in some case
+
+## 1.0.7
 
 1.  Delete unused `IPostProcessScene`
 2.  Add `postProcessInfo.PrefabDangerousDestroy()` function
