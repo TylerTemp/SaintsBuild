@@ -38,12 +38,10 @@
     
 ## Change Log##
 
-**1.0.4**
+**1.1.0**
 
-1.  iOS: Rename `IosPlist.PListSetBoolean` to `IosPlist.SetBoolean`
-2.  Android: Rename `AndroidAppManifestBuild` to `AndroidManifest`
-3.  Android: Add `AndroidManifest.SetApplicationAttribute`
-4.  Android: Add `AndroidManifest.SetActivityWithLauncherIntentAttribute`
+1.  Fix: If a settings is already in android, override it instead of appending a new one
+2.  Add: Ability to change values under res folder for android
 
 See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/CHANGELOG.md).
 
@@ -61,8 +59,13 @@ namespace SaintsBuild.Samples.Editor
     public static class BuildAndroid
     {
         [PostProcessBuild(1)]
-        public static void OnPostGenerateGradleAndroidProject(string path)
+        public static void OnPostGenerateGradleAndroidProject(BuildTarget target, string pathToBuiltProject)
         {
+            if (target != BuildTarget.Android)
+            {
+                return;
+            }
+
             using AndroidManifest androidAppManifest = new AndroidManifest(path);
             
             // required for android 12 if you have activity alias etc:
@@ -78,6 +81,18 @@ namespace SaintsBuild.Samples.Editor
             androidManifest.SetVibratePermission();
             // other you need
             androidManifest.SetPermissionAttribute("WRITE_EXTERNAL_STORAGE", 18);
+            
+            // change values under `launcher/src/main/res`
+            AndroidRes androidRes = new AndroidRes(pathToBuiltProject);
+            // add new
+            using (AndroidValue valueXml = androidRes.CreateOrGetValue("values-b+zh+Hans/string.xml"))
+            {
+                valueXml.SetString("app_name", "简体项目");
+            }
+            using (AndroidValue valueXml = androidRes.CreateOrGetValue("values-b+zh+Hant/string.xml"))
+            {
+                valueXml.SetString("app_name", "繁體項目");
+            }
         }
     }
 }

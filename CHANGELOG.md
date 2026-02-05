@@ -1,4 +1,9 @@
-﻿## 1.0.8
+﻿## 1.1.0
+
+1.  Fix: If a settings is already in android, override it instead of appending a new one
+2.  Add: Ability to change values under res folder for android
+
+## 1.0.8
 
 Fix cover config file in some case
 

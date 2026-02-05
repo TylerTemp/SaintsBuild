@@ -2,18 +2,21 @@
 using System;
 using System.IO;
 using System.Xml;
+using UnityEngine;
 
 namespace SaintsBuild.Editor
 {
-    public class AndroidValues
+    public class AndroidRes
     {
         private readonly string _resFolder;
 
-        public AndroidValues(string pathToBuiltProject)
+        public AndroidRes(string pathToBuiltProject)
         {
             _resFolder = Path.Combine(
                 pathToBuiltProject,
-                "unityLibrary/src/main/res");
+                "launcher/src/main/res"
+                // "unityLibrary/src/main/res"
+            ).Replace("\\", "/");
         }
 
         public AndroidValue CreateOrGetValue(string name)
@@ -33,7 +36,7 @@ namespace SaintsBuild.Editor
 
         public AndroidValue(string filePath)
         {
-            _filePath = filePath;
+            _filePath = filePath.Replace("\\", "/");
             DirectoryInfo folder = Directory.GetParent(_filePath)!;
             if (!folder.Exists)
             {
@@ -87,6 +90,7 @@ namespace SaintsBuild.Editor
 
             if (stringNode == null)
             {
+                Debug.Log($"add {name}={value} for {_filePath}");
                 stringNode = _doc.CreateElement("string");
                 stringNode.SetAttribute("name", name);
                 stringNode.InnerText = value;
@@ -94,6 +98,7 @@ namespace SaintsBuild.Editor
             }
             else
             {
+                Debug.Log($"replace {name}={value} for {_filePath}");
                 stringNode.InnerText = value;
             }
 
@@ -103,8 +108,11 @@ namespace SaintsBuild.Editor
         private void Save()
         {
             if (!_dirty)
+            {
                 return;
+            }
 
+            Debug.Log($"Save changes to {_filePath}");
             using XmlTextWriter writer = new XmlTextWriter(_filePath, System.Text.Encoding.UTF8);
             writer.Formatting = Formatting.Indented;
 

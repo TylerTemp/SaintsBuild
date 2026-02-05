@@ -26,6 +26,10 @@ namespace SaintsBuild.Editor
         public AndroidManifest(string basePath)
         {
             path = Path.Combine(new[] { basePath, "src", "main", "AndroidManifest.xml" });
+            if (!File.Exists(path))
+            {
+                path = Path.Combine(new[] { basePath, "unityLibrary", "src", "main", "AndroidManifest.xml" });
+            }
             XmlDocument document = new XmlDocument();
             using (XmlTextReader reader = new XmlTextReader(path))
             {
@@ -79,10 +83,12 @@ namespace SaintsBuild.Editor
             XmlAttribute existing = attributes[key, AndroidXmlNamespace];
             if (existing != null)
             {
+                Debug.Log($"set {existing.Name} with {key}={value}");
                 existing.Value = value; // replace value
             }
             else
             {
+                Debug.Log($"add {attributes} with {key}={value}");
                 attributes.Append(CreateAndroidAttribute(key, value));
             }
         }

@@ -1,0 +1,16 @@
+{
+    "name": "SaintsBuild.Samples.Editor",
+    "rootNamespace": "SaintsBuild",
+    "references": ["GUID:502e7319b8b34544a9ca1074a2c78a8b"],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
