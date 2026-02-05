@@ -11,17 +11,17 @@ namespace SaintsBuild.Editor
     {
         private const string AndroidXmlNamespace = "http://schemas.android.com/apk/res/android";
         // ReSharper disable once MemberCanBePrivate.Global
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
-        public string path;
+        // ReSharper disable once InconsistentNaming
+        public readonly string path;
         // ReSharper disable once MemberCanBePrivate.Global
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
-        public XmlNamespaceManager nsMgr;
+        // ReSharper disable once InconsistentNaming
+        public readonly XmlNamespaceManager nsMgr;
         // ReSharper disable once MemberCanBePrivate.Global
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
-        public XmlDocument androidManifestXmlDocument;
+        // ReSharper disable once InconsistentNaming
+        public readonly XmlDocument androidManifestXmlDocument;
         // ReSharper disable once MemberCanBePrivate.Global
-        // ReSharper disable once FieldCanBeMadeReadOnly.Global
-        public XmlElement applicationElement;
+        // ReSharper disable once InconsistentNaming
+        public readonly XmlElement applicationElement;
 
         public AndroidManifest(string basePath)
         {
@@ -69,21 +69,35 @@ namespace SaintsBuild.Editor
             SetApplicationAttribute("theme", appTheme);
         }
 
-        public void SetApplicationAttribute(string key, string value) {
-            applicationElement.Attributes.Append(CreateAndroidAttribute(key, value));
+        public void SetApplicationAttribute(string key, string value)
+        {
+            SetOrReplaceAttribute(applicationElement.Attributes, key, value);
+        }
+
+        public void SetOrReplaceAttribute(XmlAttributeCollection attributes, string key, string value)
+        {
+            XmlAttribute existing = attributes[key, AndroidXmlNamespace];
+            if (existing != null)
+            {
+                existing.Value = value; // replace value
+            }
+            else
+            {
+                attributes.Append(CreateAndroidAttribute(key, value));
+            }
         }
 
         public void SetStartingActivityName(string activityName) {
-            GetActivityWithLaunchIntent().Attributes!.Append(CreateAndroidAttribute("name", activityName));
+            SetOrReplaceAttribute(GetActivityWithLaunchIntent().Attributes!,"name", activityName);
+            // GetActivityWithLaunchIntent().Attributes!.Append(CreateAndroidAttribute("name", activityName));
         }
 
 
-        public void SetHardwareAcceleration() {
-            GetActivityWithLaunchIntent().Attributes!.Append(CreateAndroidAttribute("hardwareAccelerated", "true"));
-        }
+        public void SetHardwareAcceleration() => SetActivityWithLauncherIntentAttribute("hardwareAccelerated", "true");
 
         public void SetActivityWithLauncherIntentAttribute(string key, string value) {
-            GetActivityWithLaunchIntent().Attributes!.Append(CreateAndroidAttribute(key, value));
+            SetOrReplaceAttribute(GetActivityWithLaunchIntent().Attributes!, key, value);
+            // GetActivityWithLaunchIntent().Attributes!.Append(CreateAndroidAttribute(key, value));
         }
 
         public void SetBillingPermission(int maxSdkVersion=-1)  => SetPermissionAttribute("BILLING", maxSdkVersion);
@@ -92,20 +106,80 @@ namespace SaintsBuild.Editor
 
         public void SetPermissionAttribute(string value, int maxSdkVersion=-1)
         {
-            XmlNode manifest = androidManifestXmlDocument.SelectSingleNode("/manifest");
-            XmlElement child = androidManifestXmlDocument.CreateElement("uses-permission");
-            manifest!.AppendChild(child);
+            // XmlNode manifest = androidManifestXmlDocument.SelectSingleNode("/manifest");
+            // XmlElement child = androidManifestXmlDocument.CreateElement("uses-permission");
+            // manifest!.AppendChild(child);
+            //
+            // XmlAttribute newAttribute = CreateAndroidAttribute("name", $"android.permission.{value}");
+            // child.Attributes.Append(newAttribute);
+            //
+            // if (maxSdkVersion != -1)
+            // {
+            //     XmlAttribute sdkVersionAttribute = CreateAndroidAttribute("maxSdkVersion", $"{maxSdkVersion}");
+            //     child.Attributes.Append(sdkVersionAttribute);
+            // }
+            //
+            // Debug.Log($"{value} {maxSdkVersion}");
 
-            XmlAttribute newAttribute = CreateAndroidAttribute("name", $"android.permission.{value}");
-            child.Attributes.Append(newAttribute);
+            XmlElement manifest = (XmlElement)androidManifestXmlDocument.SelectSingleNode("/manifest")!;
+
+            string permissionName = $"android.permission.{value}";
+
+            XmlElement permissionElement = null;
+
+            foreach (XmlNode node in manifest.ChildNodes)
+            {
+                // ReSharper disable once MergeIntoPattern
+                // ReSharper disable once InvertIf
+                if (node is XmlElement el &&
+                    el.Name == "uses-permission" &&
+                    el.GetAttribute("name", AndroidXmlNamespace) == permissionName)
+                {
+                    permissionElement = el;
+                    break;
+                }
+            }
+
+            if (permissionElement == null)
+            {
+                permissionElement = androidManifestXmlDocument.CreateElement("uses-permission");
+                manifest.AppendChild(permissionElement);
+            }
+
+            XmlAttribute nameAttr =
+                permissionElement.Attributes["name", AndroidXmlNamespace]
+                ?? CreateAndroidAttribute("name", permissionName);
+
+            nameAttr.Value = permissionName;
+
+            if (nameAttr.OwnerElement == null)
+            {
+                permissionElement.Attributes.Append(nameAttr);
+            }
 
             if (maxSdkVersion != -1)
             {
-                XmlAttribute sdkVersionAttribute = CreateAndroidAttribute("maxSdkVersion", $"{maxSdkVersion}");
-                child.Attributes.Append(sdkVersionAttribute);
+                XmlAttribute sdkAttr =
+                    permissionElement.Attributes["maxSdkVersion", AndroidXmlNamespace]
+                    ?? CreateAndroidAttribute("maxSdkVersion", maxSdkVersion.ToString());
+
+                sdkAttr.Value = maxSdkVersion.ToString();
+
+                if (sdkAttr.OwnerElement == null)
+                    permissionElement.Attributes.Append(sdkAttr);
+            }
+            else
+            {
+                XmlAttribute oldSdkAttr =
+                    permissionElement.Attributes["maxSdkVersion", AndroidXmlNamespace];
+
+                if (oldSdkAttr != null)
+                {
+                    permissionElement.Attributes.Remove(oldSdkAttr);
+                }
             }
 
-            Debug.Log($"{value} {maxSdkVersion}");
+            Debug.Log($"Permission set: {permissionName}, maxSdkVersion={maxSdkVersion}");
         }
     }
 }
