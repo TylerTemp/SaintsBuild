@@ -34,6 +34,12 @@ namespace SaintsBuild.Editor.Utils.Apple
                 urlTypesFirstDict.SetString(cfBundleURLNameKey, urlScheme.CfBundleURLName);
             }
 
+            if(urlScheme.CfBundleTypeRole != null)
+            {
+                const string cfBundleTypeRoleKey = "CFBundleTypeRole";
+                urlTypesFirstDict.SetString(cfBundleTypeRoleKey, urlScheme.CfBundleTypeRole);
+            }
+
             const string cfBundleURLSchemesKey = "CFBundleURLSchemes";
             PlistElementArray cfBundleURLSchemesElement;
             if (urlTypesFirstDict.values.TryGetValue(cfBundleURLSchemesKey,

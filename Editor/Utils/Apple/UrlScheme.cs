@@ -14,5 +14,9 @@ namespace SaintsBuild.Editor.Utils.Apple
             CfBundleURLName = cfBundleURLName;
             CfBundleURLSchemes = cfBundleURLSchemes;
         }
+
+        public UrlScheme(string cfBundleURLName, IReadOnlyList<string> cfBundleURLSchemes): this(null, cfBundleURLName, cfBundleURLSchemes)
+        {
+        }
     }
 }
