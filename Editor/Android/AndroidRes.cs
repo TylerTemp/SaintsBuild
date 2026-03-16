@@ -33,7 +33,7 @@ namespace SaintsBuild.Editor.Android
         }
 
         // ReSharper disable once MemberCanBePrivate.Global
-        public string GetValuePath(string name) => Path.Combine(_resFolder, "values", name);
+        public string GetValuePath(string name) => Path.Combine(_resFolder, name);
     }
 
     public class AndroidValue: IDisposable
