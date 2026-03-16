@@ -35,13 +35,16 @@
     ```bash
     git submodule add https://github.com/TylerTemp/SaintsBuild.git Assets/SaintsBuild
     ```
-    
+
 ## Change Log ##
 
-**1.1.0**
+**1.2.1**
 
-1.  Fix: If a settings is already in android, override it instead of appending a new one
-2.  Add: Ability to change values under res folder for android
+**Breaking Changes**
+
+1.  Change types to corresponding namespaces, change type names
+2.  Support `OSX` plist modify
+3.  Add `FindActivityNode`, `RemoveIntentMainLauncher` for `AndroidManifest`
 
 See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/CHANGELOG.md).
 
@@ -67,7 +70,7 @@ namespace SaintsBuild.Samples.Editor
             }
 
             using AndroidManifest androidAppManifest = new AndroidManifest(path);
-            
+
             // required for android 12 if you have activity alias etc:
             androidManifest.SetActivityWithLauncherIntentAttribute("exported", "true");
 
@@ -81,7 +84,7 @@ namespace SaintsBuild.Samples.Editor
             androidManifest.SetVibratePermission();
             // other you need
             androidManifest.SetPermissionAttribute("WRITE_EXTERNAL_STORAGE", 18);
-            
+
             // change values under `launcher/src/main/res`
             AndroidRes androidRes = new AndroidRes(pathToBuiltProject);
             // add new
@@ -186,7 +189,7 @@ namespace SaintsBuild.Samples.Editor
 
 Get a callback when building a scene or play a scene. Useful when you have some debug tools and want to clean it before playing or building.
 
-Note: 
+Note:
 
 1.  For ScriptableObject, this might get the changed data saved on running
 2.  For building, the callback is called on build process (so the change happens already before `Awake`). However, in editor runtime (not built runtime), this happens **AFTER** `Awake`
