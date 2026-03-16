@@ -1,5 +1,4 @@
-﻿#if UNITY_IOS
-using System;
+﻿using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.iOS.Xcode;
@@ -88,4 +87,3 @@ namespace SaintsBuild.Editor.IOS
         public void ManagerAddInAppPurchase() => Manager.AddInAppPurchase();
     }
 }
-#endif

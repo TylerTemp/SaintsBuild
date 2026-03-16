@@ -1,4 +1,3 @@
-#if UNITY_IOS
 using System.IO;
 using SaintsBuild.Editor.Utils.Apple;
 using UnityEditor;
@@ -24,9 +23,7 @@ namespace SaintsBuild.Editor.IOS
                 return;
             }
 
-            PlistPath = plistPath;
-            Init(PlistPath);
+            Init(plistPath);
         }
     }
 }
-#endif

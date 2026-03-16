@@ -1,5 +1,4 @@
-﻿#if UNITY_IOS
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -141,4 +140,3 @@ namespace SaintsBuild.Editor.IOS
         }
     }
 }
-#endif
