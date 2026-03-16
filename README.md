@@ -107,6 +107,8 @@ namespace SaintsBuild.Samples.Editor
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
+using SaintsBuild.Editor.IOS;
+using SaintsBuild.Editor.Utils.Apple;
 
 namespace SaintsBuild.Samples.Editor
 {
@@ -115,8 +117,8 @@ namespace SaintsBuild.Samples.Editor
         [PostProcessBuild(1)]
         public static void OnPostProcessBuildAttr(BuildTarget target, string path)
         {
-            #region IosPBXProject
-            using (IosPBXProject iosPBXProject = new IosPBXProject(target, path)) {
+            #region IOSPBXProject
+            using (IOSPBXProject iosPBXProject = new IOSPBXProject(target, path)) {
                 // AddFramework
                 iosPBXProject.AddFrameworkCoreHaptics();
                 iosPBXProject.AddFrameworkAdServices();
@@ -141,29 +143,19 @@ namespace SaintsBuild.Samples.Editor
                 // all target
                 iosPBXProject.SetAllBuildPropertyBitcode("NO");
                 // or if you want to set for each target
-                iosPBXProject.SetBuildPropertyBitcode(iosPBXProject.project.GetUnityMainTargetGuid(), "NO");
-                iosPBXProject.SetBuildPropertyBitcode(iosPBXProject.project.TargetGuidByName(PBXProject.GetUnityTestTargetName()), "NO");
-                iosPBXProject.SetBuildPropertyBitcode(iosPBXProject.project.GetUnityFrameworkTargetGuid(), "NO");
+                iosPBXProject.SetBuildPropertyBitcode(iosPBXProject.Project.GetUnityMainTargetGuid(), "NO");
+                iosPBXProject.SetBuildPropertyBitcode(iosPBXProject.Project.TargetGuidByName(PBXProject.GetUnityTestTargetName()), "NO");
+                iosPBXProject.SetBuildPropertyBitcode(iosPBXProject.Project.GetUnityFrameworkTargetGuid(), "NO");
             }
             #endregion
 
             #region Plist
-            using (IosPlist iosPlist = new IosPlist(target, path)) {
+            using (IOSPlist iosPlist = new IOSPlist(target, path)) {
                 // urlScheme
                 iosPlist.AddUrlSchemes(new[]
                 {
-                    new IosPlist.UrlScheme
-                    {
-                        CFBundleURLName = "yourUrlName",
-                        CFBundleTypeRole = "Viewer",
-                        CFBundleURLSchemes = new[] {"yourSchemes"},
-                    },
-                    new IosPlist.UrlScheme
-                    {
-                        CFBundleURLName = "Another",
-                        CFBundleTypeRole = "Viewer",
-                        CFBundleURLSchemes = new[] {"anotherSchemes"},
-                    },
+                    new UrlScheme("yourUrlName", "Viewer", new[] {"yourSchemes"}),
+                    new UrlScheme("Another", "Viewer", new[] {"anotherSchemes"}),
                 });
 
                 // ITSAppUsesNonExemptEncryption
@@ -178,8 +170,8 @@ namespace SaintsBuild.Samples.Editor
             }
             #endregion
 
-            #region IosAppIcon
-            using (IosAppIcon iosAppIcon = new IosAppIcon(target, path)) {
+            #region IOSAppIcon
+            using (IOSAppIcon iosAppIcon = new IOSAppIcon(target, path)) {
                 // set market icon as Unity will not process it
                 iosAppIcon.SetMarketIcon1024("Assets/Game/icon-1024x1024.png");
             }

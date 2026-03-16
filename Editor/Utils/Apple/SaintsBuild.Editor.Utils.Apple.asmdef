@@ -1,0 +1,20 @@
+{
+    "name": "SaintsBuild.Editor.Utils.Apple",
+    "rootNamespace": "SaintsBuild",
+    "references": [
+        "GUID:cb862f9340462e843aff1ed87b152e74"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_IOS || UNITY_STANDALONE_OSX"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

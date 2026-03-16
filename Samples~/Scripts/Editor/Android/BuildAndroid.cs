@@ -1,10 +1,11 @@
 ﻿#if UNITY_ANDROID
 using SaintsBuild.Editor;
+using SaintsBuild.Editor.Android;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
-namespace SaintsBuild.Samples.Scripts.Editor
+namespace SaintsBuild.Samples.Scripts.Editor.Android
 {
     public static class BuildAndroid
     {

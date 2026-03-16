@@ -1,15 +1,18 @@
-﻿#if UNITY_ANDROID
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Xml;
 using UnityEngine;
 
-namespace SaintsBuild.Editor
+namespace SaintsBuild.Editor.Android
 {
     public class AndroidManifest: IDisposable
     {
-        private const string AndroidXmlNamespace = "http://schemas.android.com/apk/res/android";
+        // ReSharper disable once MemberCanBePrivate.Global
+        public const string AndroidXmlNamespace = "http://schemas.android.com/apk/res/android";
+        // ReSharper disable once MemberCanBePrivate.Global
+        public const string UnityActivityName = "com.unity3d.player.UnityPlayerActivity";
+
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once InconsistentNaming
         public readonly string path;
@@ -68,16 +71,19 @@ namespace SaintsBuild.Editor
                                                               "intent-filter/category/@android:name='android.intent.category.LAUNCHER']", nsMgr);
         }
 
+        // ReSharper disable once UnusedMember.Global
         public void SetApplicationTheme(string appTheme) {
             // applicationElement.Attributes.Append(CreateAndroidAttribute("theme", appTheme));
             SetApplicationAttribute("theme", appTheme);
         }
 
+        // ReSharper disable once MemberCanBePrivate.Global
         public void SetApplicationAttribute(string key, string value)
         {
             SetOrReplaceAttribute(applicationElement.Attributes, key, value);
         }
 
+        // ReSharper disable once MemberCanBePrivate.Global
         public void SetOrReplaceAttribute(XmlAttributeCollection attributes, string key, string value)
         {
             XmlAttribute existing = attributes[key, AndroidXmlNamespace];
@@ -187,6 +193,99 @@ namespace SaintsBuild.Editor
 
             Debug.Log($"Permission set: {permissionName}, maxSdkVersion={maxSdkVersion}");
         }
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        public (XmlNodeList activityNode, XmlElement foundNode) FindActivityNode(string activityName)
+        {
+            XmlNodeList activityNode = applicationElement.SelectNodes("activity");
+            if (activityNode == null)
+            {
+                return (null, null);
+            }
+
+            // XmlElement existingActivity = null;
+            foreach (XmlNode node in activityNode)
+            {
+                if (node is XmlElement el &&
+                    el.GetAttribute("name", AndroidXmlNamespace) == activityName)
+                {
+                    return (activityNode, el);
+                }
+            }
+
+            return (activityNode, null);
+        }
+
+        public enum RemoveIntentMainLauncherResult
+        {
+            Ok,
+            ActivityNodeNotFound,
+            IntentFiltersNotFound,
+            IntentNotFound,
+            IntentIsNotMainLauncher,
+        }
+
+        public RemoveIntentMainLauncherResult RemoveIntentMainLauncher(string activityName = UnityActivityName)
+        {
+            (XmlNodeList activityNode, XmlElement targetActivity) = FindActivityNode(activityName);
+            if (activityNode == null)
+            {
+                Debug.LogWarning("Activity node not found");
+                return RemoveIntentMainLauncherResult.ActivityNodeNotFound;
+            }
+
+            if (targetActivity == null)
+            {
+                Debug.LogWarning($"target activity not found: {activityName}");
+                return RemoveIntentMainLauncherResult.IntentNotFound;
+            }
+
+            XmlNodeList intentFilters = targetActivity.SelectNodes("intent-filter");
+            if (intentFilters == null)
+            {
+                Debug.LogWarning("intent-filters not found");
+                return RemoveIntentMainLauncherResult.IntentFiltersNotFound;
+            }
+
+            bool hasMainAction = false;
+            bool hasLauncherCategory = false;
+            foreach (XmlNode node in intentFilters)
+            {
+                if (node is not XmlElement intentFilter)
+                {
+                    continue;
+                }
+
+                foreach (XmlNode child in intentFilter.ChildNodes)
+                {
+                    if (child is not XmlElement el)
+                    {
+                        continue;
+                    }
+
+                    // ReSharper disable once ConvertIfStatementToSwitchStatement
+                    if (el.Name == "action" &&
+                        el.GetAttribute("name", AndroidXmlNamespace) == "android.intent.action.MAIN")
+                    {
+                        hasMainAction = true;
+                    }
+                    else if (el.Name == "category" &&
+                             el.GetAttribute("name", AndroidXmlNamespace) == "android.intent.category.LAUNCHER")
+                    {
+                        hasLauncherCategory = true;
+                    }
+                }
+
+                // ReSharper disable once InvertIf
+                if (hasMainAction && hasLauncherCategory)
+                {
+                    targetActivity.RemoveChild(intentFilter);
+                    return RemoveIntentMainLauncherResult.Ok;
+                }
+            }
+
+            Debug.LogWarning("intent is not main launcher");
+            return RemoveIntentMainLauncherResult.IntentIsNotMainLauncher;
+        }
     }
 }
-#endif

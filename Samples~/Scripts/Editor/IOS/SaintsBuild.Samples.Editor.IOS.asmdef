@@ -1,0 +1,22 @@
+{
+    "name": "SaintsBuild.Samples.Editor.IOS",
+    "rootNamespace": "SaintsBuild",
+    "references": [
+        "GUID:502e7319b8b34544a9ca1074a2c78a8b",
+        "GUID:fec96a942d3071f41ab7f6528593c292",
+        "GUID:c116edf37cab6284d845d2d7a1794908"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_IOS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,29 +1,38 @@
-#if UNITY_ANDROID
 using System;
 using System.IO;
 using System.Xml;
 using UnityEngine;
 
-namespace SaintsBuild.Editor
+namespace SaintsBuild.Editor.Android
 {
     public class AndroidRes
     {
         private readonly string _resFolder;
 
-        public AndroidRes(string pathToBuiltProject)
+        // ReSharper disable once MemberCanBePrivate.Global
+        public const string LauncherResFolder = "launcher/src/main/res";
+        // ReSharper disable once MemberCanBePrivate.Global
+        public const string UnityLibraryResFolder = "unityLibrary/src/main/res";
+
+        public AndroidRes(string pathToBuiltProject, string resFolder=LauncherResFolder)
         {
             _resFolder = Path.Combine(
                 pathToBuiltProject,
-                "launcher/src/main/res"
+                resFolder
+                // "launcher/src/main/res"
                 // "unityLibrary/src/main/res"
             ).Replace("\\", "/");
         }
+
+        // ReSharper disable once UnusedMember.Global
+        public static AndroidRes CreateAndroidResUnityLibrary(string pathToBuiltProject) => new AndroidRes(pathToBuiltProject, UnityLibraryResFolder);
 
         public AndroidValue CreateOrGetValue(string name)
         {
             return new AndroidValue(GetValuePath(name));
         }
 
+        // ReSharper disable once MemberCanBePrivate.Global
         public string GetValuePath(string name) => Path.Combine(_resFolder, name);
     }
 
@@ -126,4 +135,3 @@ namespace SaintsBuild.Editor
         }
     }
 }
-#endif

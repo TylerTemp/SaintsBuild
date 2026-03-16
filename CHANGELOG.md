@@ -1,4 +1,12 @@
-﻿## 1.1.0
+﻿## 1.2.0
+
+**Breaking Changes**
+
+1.  Change types to corresponding namespaces, change type names
+2.  Support `OSX` plist modify
+3.  Add `FindActivityNode`, `RemoveIntentMainLauncher` for `AndroidManifest`
+
+## 1.1.0
 
 1.  Fix: If a settings is already in android, override it instead of appending a new one
 2.  Add: Ability to change values under res folder for android
