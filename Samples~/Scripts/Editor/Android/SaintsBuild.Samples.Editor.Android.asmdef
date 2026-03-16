@@ -3,7 +3,6 @@
     "rootNamespace": "SaintsBuild",
     "references": [
         "GUID:502e7319b8b34544a9ca1074a2c78a8b",
-        "GUID:8d665b8acea638942a19aa4d003d91ad",
         "GUID:8d665b8acea638942a19aa4d003d91ad"
     ],
     "includePlatforms": [
