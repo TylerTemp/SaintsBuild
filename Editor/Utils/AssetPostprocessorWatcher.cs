@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Compilation;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace SaintsBuild.Editor.Utils
 {
@@ -48,6 +50,11 @@ namespace SaintsBuild.Editor.Utils
                 return;
             }
 
+            if (EditorApplication.isCompiling)
+            {
+                return;
+            }
+
             if (BuildPipeline.isBuildingPlayer)
             {
                 return;
@@ -65,6 +72,8 @@ namespace SaintsBuild.Editor.Utils
             List<int> toDeleteSoIndex = new List<int>();
             List<int> toDeleteComponentIndex = new List<int>();
 
+            List<UnityEngine.Object> importedObjs = new List<Object>();
+
             foreach (string importedAsset in importedAssets)
             {
                 if (importedAsset.EndsWith(".asset"))
@@ -72,6 +81,7 @@ namespace SaintsBuild.Editor.Utils
                     ScriptableObject so = AssetDatabase.LoadAssetAtPath<ScriptableObject>(importedAsset);
                     if (so != null)
                     {
+                        importedObjs.Add(so);
                         // ReSharper disable once SuspiciousTypeConversion.Global
                         if (so is IPostProcess && !toAddSo.Contains(so) && !watchedList.scriptableObjs.Contains(so))
                         {
@@ -83,6 +93,7 @@ namespace SaintsBuild.Editor.Utils
                 {
                     GameObject go = AssetDatabase.LoadAssetAtPath<GameObject>(importedAsset);
                     // Debug.Log($"{go}: {importedAsset}");
+                    importedObjs.Add(go);
                     if (go != null)
                     {
                         foreach (Component component in go.GetComponentsInChildren<Component>(true))
@@ -107,7 +118,14 @@ namespace SaintsBuild.Editor.Utils
             // check delete
             for (int index = watchedList.prefabInfos.Length - 1; index >= 0; index--)
             {
-                Component comp = watchedList.prefabInfos[index].component;
+                PrefabInfo target = watchedList.prefabInfos[index];
+                Component comp = target.component;
+                GameObject root = target.root;
+                if (importedObjs.Contains(root))
+                {
+                    continue;
+                }
+
                 // ReSharper disable once SuspiciousTypeConversion.Global
                 if (comp == null || comp is not IPostProcess)
                 {
@@ -118,6 +136,11 @@ namespace SaintsBuild.Editor.Utils
             for (int index = watchedList.scriptableObjs.Length - 1; index >= 0; index--)
             {
                 ScriptableObject so = watchedList.scriptableObjs[index];
+                if (importedObjs.Contains(so))
+                {
+                    continue;
+                }
+
                 // ReSharper disable once SuspiciousTypeConversion.Global
                 if (so == null || so is not IPostProcess)
                 {

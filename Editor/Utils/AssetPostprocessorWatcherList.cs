@@ -43,28 +43,38 @@ namespace SaintsBuild.Editor.Utils
 
         public void RestoreFromBackupAndClear()
         {
-            List<string> reImports = new List<string>();
-            foreach (BackupInfo backupInfo in backupInfos)
-            {
-#if SAINTSBUILD_DEBUG && SAINTSBUILD_DEBUG_CALLBACKS
-                Debug.Log($"#PostProcess# restore {backupInfo.assetPath} from {backupInfo.backupPath}");
-#endif
-                File.Copy(backupInfo.backupPath, backupInfo.assetPath, true);
-                reImports.Add(backupInfo.assetPath);
-            }
-
-            if (reImports.Count == 0)
+            if (backupInfos.Count == 0)
             {
                 return;
             }
 
+            List<string> reImports = new List<string>();
+            foreach (BackupInfo backupInfo in backupInfos)
+            {
+#if SAINTSBUILD_DEBUG && SAINTSBUILD_DEBUG_CALLBACKS
+#else
+                if(BuildPipeline.isBuildingPlayer)
+#endif
+                {
+                    Debug.Log($"#PostProcess# restore {backupInfo.assetPath} from {backupInfo.backupPath}");
+                }
+                File.Copy(backupInfo.backupPath, backupInfo.assetPath, true);
+                reImports.Add(backupInfo.assetPath);
+            }
+
             foreach (string reImport in reImports)
             {
+#if SAINTSBUILD_DEBUG && SAINTSBUILD_DEBUG_CALLBACKS
+                Debug.Log($"reimport {reImport}");
+#endif
                 AssetDatabase.ImportAsset(reImport);
             }
 
             EditorApplication.delayCall += () =>
             {
+#if SAINTSBUILD_DEBUG && SAINTSBUILD_DEBUG_CALLBACKS
+                Debug.Log("clean list");
+#endif
                 backupInfos.Clear();
 
                 using SerializedObject serializedObject = new SerializedObject(this);

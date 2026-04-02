@@ -1,5 +1,4 @@
-﻿#if UNITY_EDITOR
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -67,9 +66,14 @@ namespace SaintsBuild.Editor
                 string backupTarget = Path.Combine(backupFolder, $"{backupIndex}_{fileBaseName}.bk").Replace("\\", "/");
 
 #if SAINTSBUILD_DEBUG && SAINTSBUILD_DEBUG_CALLBACKS
-                Debug.Log(
-                    $"#PostProcess# backup {source} to {backupTarget} ({so})");
+#else
+                if(BuildPipeline.isBuildingPlayer)
 #endif
+                {
+                    Debug.Log(
+                        $"#PostProcess# backup {source} to {backupTarget} ({so})");
+                }
+
                 File.Copy(source, backupTarget, true);
 
                 bool needRestore = soPostProcess.EditorOnPostProcess(new PostProcessInfo(
@@ -105,9 +109,14 @@ namespace SaintsBuild.Editor
                 string backupTarget = Path.Combine(backupFolder, $"{backupIndex}_{fileBaseName}.bk").Replace("\\", "/");
                 backupIndex += 1;
 #if SAINTSBUILD_DEBUG && SAINTSBUILD_DEBUG_CALLBACKS
-                Debug.Log(
-                    $"#PostProcessScene# backup {assetPath} to {backupTarget} (prefab)");
+#else
+                if(BuildPipeline.isBuildingPlayer)
 #endif
+                {
+                    Debug.Log(
+                        $"#PostProcessScene# backup {assetPath} to {backupTarget} (prefab)");
+                }
+
                 File.Copy(assetPath, backupTarget, true);
 
                 GameObject root = PrefabUtility.LoadPrefabContents(assetPath);
@@ -272,5 +281,3 @@ namespace SaintsBuild.Editor
         }
     }
 }
-
-#endif
