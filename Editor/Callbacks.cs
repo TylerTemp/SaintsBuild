@@ -15,6 +15,7 @@ using UnityEditor.Callbacks;
 
 namespace SaintsBuild.Editor
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class Callbacks
 #if SAINTSBUILD_POST_PROCESS
         : IPreprocessBuildWithReport, IPostprocessBuildWithReport

@@ -1,4 +1,4 @@
-﻿#if SAINTSBUILD_POST_PROCESS
+﻿#if !SAINTSBUILD_POST_PROCESS
 using UnityEditor.Build;
 using UnityEditor.Callbacks;
 using UnityEditor.Build.Reporting;
