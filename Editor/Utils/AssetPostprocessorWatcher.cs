@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,42 +9,33 @@ namespace SaintsBuild.Editor.Utils
 {
     public class AssetPostprocessorWatcher: AssetPostprocessor
     {
-        private static AssetPostprocessorWatcherList _assetPostprocessorWatcherList;
+        // private static AssetPostprocessorWatcherList _assetPostprocessorWatcherList;
 
-        private static AssetPostprocessorWatcherList EnsureAssetPostprocessorWatcherList()
+        [InitializeOnLoadMethod]
+        private static void EnsureAssetPostprocessorWatcherList()
         {
-            if (_assetPostprocessorWatcherList == null)
+            if (!Directory.Exists("Assets/Editor Default Resources"))
             {
-                _assetPostprocessorWatcherList =
-                    AssetDatabase.LoadAssetAtPath<AssetPostprocessorWatcherList>(
-                        "Assets/Editor Default Resources/SaintsBuild/AssetPostprocessorWatcherList.asset");
+                Debug.Log("Create folder: Assets/Editor Default Resources");
+                AssetDatabase.CreateFolder("Assets", "Editor Default Resources");
             }
 
-            const string path = "Assets/Editor Default Resources/SaintsBuild/AssetPostprocessorWatcherList.asset";
-
-            // ReSharper disable once InvertIf
-            if (_assetPostprocessorWatcherList == null && !File.Exists(path))
+            if (!Directory.Exists("Assets/Editor Default Resources/SaintsBuild"))
             {
-                if (!Directory.Exists("Assets/Editor Default Resources"))
-                {
-                    Debug.Log("Create folder: Assets/Editor Default Resources");
-                    AssetDatabase.CreateFolder("Assets", "Editor Default Resources");
-                }
-
-                if (!Directory.Exists("Assets/Editor Default Resources/SaintsBuild"))
-                {
-                    Debug.Log("Create folder: Assets/Editor Default Resources/SaintsBuild");
-                    AssetDatabase.CreateFolder("Assets/Editor Default Resources", "SaintsBuild");
-                }
-
-                _assetPostprocessorWatcherList = ScriptableObject.CreateInstance<AssetPostprocessorWatcherList>();
+                Debug.Log("Create folder: Assets/Editor Default Resources/SaintsBuild");
+                AssetDatabase.CreateFolder("Assets/Editor Default Resources", "SaintsBuild");
+            }
+            const string path = "Assets/Editor Default Resources/SaintsBuild/AssetPostprocessorWatcherList.asset";
+            if (!File.Exists(path))
+            {
+                AssetPostprocessorWatcherList assetPostprocessorWatcherList = AssetPostprocessorWatcherList.instance;
                 Debug.Log("Create AssetPostprocessorWatcherList");
-                AssetDatabase.CreateAsset(_assetPostprocessorWatcherList, path);
+                AssetDatabase.CreateAsset(assetPostprocessorWatcherList, path);
                 AssetDatabase.SaveAssets();
             }
-
-            return _assetPostprocessorWatcherList;
         }
+
+
 
         // importedAssets to check scriptableObject
         // delete trigger we wants
@@ -51,7 +43,18 @@ namespace SaintsBuild.Editor.Utils
             string[] movedAssets,
             string[] movedFromAssetPaths)
         {
-            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            if (EditorApplication.isPlaying)  // don't use EditorApplication.isPlayingOrWillChangePlaymode
+            {
+                return;
+            }
+
+            if (BuildPipeline.isBuildingPlayer)
+            {
+                return;
+            }
+
+            AssetPostprocessorWatcherList watchedList = AssetPostprocessorWatcherList.instance;
+            if (watchedList.backupInfos.Count > 0)  // don't update if there are backups needs restore
             {
                 return;
             }
@@ -61,12 +64,6 @@ namespace SaintsBuild.Editor.Utils
 
             List<int> toDeleteSoIndex = new List<int>();
             List<int> toDeleteComponentIndex = new List<int>();
-
-            AssetPostprocessorWatcherList watchedList = EnsureAssetPostprocessorWatcherList();
-            if (watchedList == null)
-            {
-                return;
-            }
 
             foreach (string importedAsset in importedAssets)
             {
@@ -92,7 +89,7 @@ namespace SaintsBuild.Editor.Utils
                         {
                             // Debug.Log($"comp {component}: {component is IPostProcess}, {toAddComponents.All(each => each.root != go && each.component != component)}");
                             // ReSharper disable once SuspiciousTypeConversion.Global
-                            var checkContent = new PrefabInfo
+                            PrefabInfo checkContent = new PrefabInfo
                             {
                                 root = go,
                                 component = component,
@@ -171,8 +168,10 @@ namespace SaintsBuild.Editor.Utils
                     soPropArray.DeleteArrayElementAtIndex(toDeleteSo);
                 }
 
-                so.ApplyModifiedProperties();
+                so.ApplyModifiedPropertiesWithoutUndo();
             }
+
+            // AssetPostprocessorWatcherList.instance.SaveToDisk();
         }
 
         // private static readonly List<Component> ToAddComponents = new List<Component>();

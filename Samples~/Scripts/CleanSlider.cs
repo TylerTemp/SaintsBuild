@@ -8,9 +8,10 @@ namespace SaintsBuild.Samples
         public Slider slider;
 
 #if UNITY_EDITOR
-        public void EditorOnPostProcess(PostProcessInfo postProcessInfo)
+        public bool EditorOnPostProcess(PostProcessInfo postProcessInfo)
         {
             slider.value = 0;
+            return false;
         }
 #endif
     }

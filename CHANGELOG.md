@@ -1,4 +1,11 @@
-﻿## 1.2.1
+﻿## 2.0.0
+
+1.  When processing an asset, it will now get backup on entering play mode or starting build, and get restored when exit play mode or exit build
+2.  Change `IPostProcess.EditorOnPostProcess` to return a `bool` value to show if the asset need to backup/restore. Has no effect for scene objects
+3.  Fix: WatchList might get purged when building. WatchList now pauses the watcher if the project is playing or building
+4.  Move menu to `Tools/SaintsBuild`
+
+## 1.2.1
 
 **Breaking Changes**
 

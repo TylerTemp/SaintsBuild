@@ -10,11 +10,11 @@ namespace SaintsBuild.Editor.Utils
     public static class SaintsMenu
     {
 #if SAINTSBUILD_POST_PROCESS_SCENE
-        [MenuItem("Window/Saints/Enable Scene Post Process")]
-        public static void PostProcessScene() => RemoveCompileDefine("SAINTSBUILD_POST_PROCESS_SCENE");
+        [MenuItem("Tools/SaintsBuild/Enable Scene Post Process")]
+        public static void PostProcessScene() => RemoveCompileDefine("SAINTSBUILD_POST_PROCESS");
 #else
-        [MenuItem("Window/Saints/Disable Scene Post Process")]
-        public static void PostProcessScene() => AddCompileDefine("SAINTSBUILD_POST_PROCESS_SCENE");
+        [MenuItem("Tools/SaintsBuild/Disable Scene Post Process")]
+        public static void PostProcessScene() => AddCompileDefine("SAINTSBUILD_POST_PROCESS");
 #endif
 
         // ReSharper disable once UnusedMember.Local

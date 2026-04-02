@@ -38,13 +38,12 @@
 
 ## Change Log ##
 
-**1.2.1**
+**2.0.0**
 
-**Breaking Changes**
-
-1.  Change types to corresponding namespaces, change type names
-2.  Support `OSX` plist modify
-3.  Add `FindActivityNode`, `RemoveIntentMainLauncher` for `AndroidManifest`
+1.  When processing an asset, it will now get backup on entering play mode or starting build, and get restored when exit play mode or exit build
+2.  Change `IPostProcess.EditorOnPostProcess` to return a `bool` value to show if the asset need to backup/restore. Has no effect for scene objects
+3.  Fix: WatchList might get purged when building. WatchList now pauses the watcher if the project is playing or building
+4.  Move menu to `Tools/SaintsBuild`
 
 See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/CHANGELOG.md).
 
@@ -189,14 +188,14 @@ namespace SaintsBuild.Samples.Editor
 
 Get a callback when building a scene or play a scene. Useful when you have some debug tools and want to clean it before playing or building.
 
-Note:
+> [!WARNING]
+> For building, the callback is called on build process (so the change happens already before `Awake`). 
+> However, in editor runtime (not built runtime), this happens **AFTER** `Awake`
 
-1.  For ScriptableObject, this might get the changed data saved on running
-2.  For building, the callback is called on build process (so the change happens already before `Awake`). However, in editor runtime (not built runtime), this happens **AFTER** `Awake`
 
 **Set Up**
 
-Add macro `SAINTSBUILD_POST_PROCESS_SCENE`
+Add macro `SAINTSBUILD_POST_PROCESS`. You can do it by `Tools/SaintsBuild/Enable Scene Post Process`
 
 Or, put this in any of your editor script:
 
@@ -208,6 +207,24 @@ public static void OnPostProcess()
 {
     Debug.Log("call SaintsBuild OnPostProcess");
     SaintsBuild.Editor.Callbacks.OnPostProcess();
+}
+
+public class PreprocessBuildWithReport: IPreprocessBuildWithReport
+{
+    public int callbackOrder => 0;
+    public void OnPreprocessBuild(BuildReport report)
+    {
+        SaintsBuild.Editor.Callbacks.OnPreprocessBuildCallback();
+    }
+}
+
+public class PostprocessBuildWithReport: IPostprocessBuildWithReport
+{
+    public int callbackOrder => 0;
+    public void OnPostprocessBuild(BuildReport report)
+    {
+        SaintsBuild.Editor.Callbacks.OnPostprocessBuildCallback();
+    }
 }
 ```
 
@@ -221,9 +238,10 @@ public class CleanSlider: MonoBehaviour, IPostProcess
     public Slider slider;
 
 #if UNITY_EDITOR  // don't forget this
-    public void EditorOnPostProcess(PostProcessInfo postProcessInfo)
+    public bool EditorOnPostProcess(PostProcessInfo postProcessInfo)
     {
         slider.value = 0;
+        return false;  // no need to backup
     }
 #endif
 }
@@ -254,7 +272,7 @@ public class TextContainer : MonoBehaviour, IPostProcess
     }
 
 #if UNITY_EDITOR
-    public void EditorOnPostProcess(PostProcessInfo postProcessInfo)
+    public bool EditorOnPostProcess(PostProcessInfo postProcessInfo)
     {
         if (postProcessInfo.IsBuilding)  // in building process, Unity will call this function and apply changes to build result
         {
@@ -264,6 +282,7 @@ public class TextContainer : MonoBehaviour, IPostProcess
         {
             // deal conflict with Awake
         }
+        return true;  // need backup/restore as this will modify the asset itself.
     }
 
     private void CleanUpExample()
@@ -271,7 +290,7 @@ public class TextContainer : MonoBehaviour, IPostProcess
         foreach (Transform eachExample in container.Cast<Transform>().ToArray())
         {
             Debug.Log(eachExample.gameObject.name);
-            DestroyImmediate(eachExample.gameObject);
+            DestroyImmediate(eachExample.gameObject, true);  // allow destroy in prefab
         }
     }
 #endif
@@ -281,20 +300,14 @@ public class TextContainer : MonoBehaviour, IPostProcess
 Using on a prefab which can also be in scene:
 
 ```csharp
-    public class SubContent : MonoBehaviour, IPostProcess
-    {
+public class SubContent : MonoBehaviour, IPostProcess
+{
 #if UNITY_EDITOR
-        public void EditorOnPostProcess(PostProcessInfo postProcessInfo)
-        {
-            if (postProcessInfo.PrefabDangerousDestroy())  // hide it so we don't destroy the prefab and save it
-            {
-                gameObject.SetActive(false);
-            }
-            else  // can safely destroy
-            {
-                DestroyImmediate(gameObject);
-            }
-        }
-#endif
+    public bool EditorOnPostProcess(PostProcessInfo postProcessInfo)
+    {
+        DestroyImmediate(gameObject, true);  // destory it even it's a prefab
+        return true;  // restore it when finish playing/building
     }
+#endif
+}
 ```

@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-namespace SaintsBuild.Samples
+namespace SaintsBuild.Samples.Scripts
 {
     public class PrefabCreator : MonoBehaviour
     {
@@ -9,6 +8,7 @@ namespace SaintsBuild.Samples
 
         private void Start()
         {
+            Debug.Log("Prefab Creator Start");
             Instantiate(prefab, transform);
         }
     }

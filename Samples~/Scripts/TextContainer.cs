@@ -26,7 +26,7 @@ namespace SaintsBuild.Samples
         }
 
 #if UNITY_EDITOR
-        public void EditorOnPostProcess(PostProcessInfo postProcessInfo)
+        public bool EditorOnPostProcess(PostProcessInfo postProcessInfo)
         {
             if (postProcessInfo.IsBuilding)  // in building process, Unity will call this function and apply changes to build result
             {
@@ -36,6 +36,8 @@ namespace SaintsBuild.Samples
             {
                 // deal conflict with Awake
             }
+
+            return true;
         }
 
         private void CleanUpExample()
