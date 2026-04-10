@@ -1,11 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Compilation;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace SaintsBuild.Editor.Utils
 {
@@ -60,6 +57,21 @@ namespace SaintsBuild.Editor.Utils
                 return;
             }
 
+            // if (EditorApplication.timeSinceStartup < 0.1f)  // Too short time, might be a domain-reload
+            // {
+            //     return;
+            // }
+            //
+            // if (AssetDatabase.IsAssetImportWorkerProcess())  // still importing, skip checking too
+            // {
+            //     return;
+            // }
+
+            // if (EditorApplication.isUpdating)  // edit busy, skip this too
+            // {
+            //     return;
+            // }
+
             AssetPostprocessorWatcherList watchedList = AssetPostprocessorWatcherList.instance;
             if (watchedList.backupInfos.Count > 0)  // don't update if there are backups needs restore
             {
@@ -69,10 +81,10 @@ namespace SaintsBuild.Editor.Utils
             List<ScriptableObject> toAddSo = new List<ScriptableObject>();
             List<PrefabInfo> toAddComponents = new List<PrefabInfo>();
 
-            List<int> toDeleteSoIndex = new List<int>();
-            List<int> toDeleteComponentIndex = new List<int>();
+            // List<int> toDeleteSoIndex = new List<int>();
+            // List<int> toDeleteComponentIndex = new List<int>();
 
-            List<UnityEngine.Object> importedObjs = new List<Object>();
+            // List<UnityEngine.Object> importedObjs = new List<Object>();
 
             foreach (string importedAsset in importedAssets)
             {
@@ -81,7 +93,7 @@ namespace SaintsBuild.Editor.Utils
                     ScriptableObject so = AssetDatabase.LoadAssetAtPath<ScriptableObject>(importedAsset);
                     if (so != null)
                     {
-                        importedObjs.Add(so);
+                        // importedObjs.Add(so);
                         // ReSharper disable once SuspiciousTypeConversion.Global
                         if (so is IPostProcess && !toAddSo.Contains(so) && !watchedList.scriptableObjs.Contains(so))
                         {
@@ -93,7 +105,7 @@ namespace SaintsBuild.Editor.Utils
                 {
                     GameObject go = AssetDatabase.LoadAssetAtPath<GameObject>(importedAsset);
                     // Debug.Log($"{go}: {importedAsset}");
-                    importedObjs.Add(go);
+                    // importedObjs.Add(go);
                     if (go != null)
                     {
                         foreach (Component component in go.GetComponentsInChildren<Component>(true))
@@ -115,16 +127,98 @@ namespace SaintsBuild.Editor.Utils
                 }
             }
 
-            // check delete
+            // // check delete
+            // for (int index = watchedList.prefabInfos.Length - 1; index >= 0; index--)
+            // {
+            //     PrefabInfo target = watchedList.prefabInfos[index];
+            //     Component comp = target.component;
+            //     GameObject root = target.root;
+            //     if (importedObjs.Contains(root))
+            //     {
+            //         continue;
+            //     }
+            //
+            //     // ReSharper disable once SuspiciousTypeConversion.Global
+            //     if (comp == null || comp is not IPostProcess)
+            //     {
+            //         Debug.Log($"Component {comp} is not target, will get delete at {index}");
+            //         toDeleteComponentIndex.Add(index);
+            //     }
+            // }
+            // for (int index = watchedList.scriptableObjs.Length - 1; index >= 0; index--)
+            // {
+            //     ScriptableObject so = watchedList.scriptableObjs[index];
+            //     if (importedObjs.Contains(so))
+            //     {
+            //         continue;
+            //     }
+            //
+            //     // ReSharper disable once SuspiciousTypeConversion.Global
+            //     if (so == null || so is not IPostProcess)
+            //     {
+            //         toDeleteSoIndex.Add(index);
+            //     }
+            // }
+
+            // if (toAddSo.Count == 0 && toDeleteSoIndex.Count == 0 && toDeleteComponentIndex.Count == 0 && toAddComponents.Count == 0)
+            if (toAddSo.Count != 0 || toAddComponents.Count != 0)
+            {
+                using SerializedObject so = new SerializedObject(watchedList);
+
+                // int toAddSoCount = toAddSo.Count;
+                SerializedProperty soPropArray =
+                    so.FindProperty(nameof(AssetPostprocessorWatcherList.scriptableObjs));
+
+                foreach (ScriptableObject target in toAddSo)
+                {
+                    int toAddIndex = soPropArray.arraySize;
+                    soPropArray.arraySize = toAddIndex + 1;
+                    SerializedProperty soPropItem = soPropArray.GetArrayElementAtIndex(toAddIndex);
+                    Debug.Log($"Add {target}@[{toAddIndex}] to watched scriptableObjects");
+                    soPropItem.objectReferenceValue = target;
+                }
+
+                SerializedProperty compPropArray =
+                    so.FindProperty(nameof(AssetPostprocessorWatcherList.prefabInfos));
+
+                foreach (PrefabInfo target in toAddComponents)
+                {
+                    int toAddIndex = compPropArray.arraySize;
+                    compPropArray.arraySize = toAddIndex + 1;
+                    SerializedProperty compPropItem = compPropArray.GetArrayElementAtIndex(toAddIndex);
+                    Debug.Log($"Add {target}@[{toAddIndex}] to watched comp");
+                    compPropItem.FindPropertyRelative(nameof(PrefabInfo.root)).objectReferenceValue = target.root;
+                    compPropItem.FindPropertyRelative(nameof(PrefabInfo.component)).objectReferenceValue =
+                        target.component;
+                }
+                so.ApplyModifiedPropertiesWithoutUndo();
+                // AssetPostprocessorWatcherList.instance.SaveToDisk();
+            }
+
+            // Don't check right now, some asset might not be ready
+            EditorApplication.delayCall += DelayCheckDelete;
+        }
+
+        private static void DelayCheckDelete()
+        {
+            EditorApplication.delayCall += CheckDelete;
+        }
+
+        private static void CheckDelete()
+        {
+            AssetPostprocessorWatcherList watchedList = AssetPostprocessorWatcherList.instance;
+            if (watchedList.backupInfos.Count > 0)  // don't update if there are backups needs restore
+            {
+                return;
+            }
+
+            List<int> toDeleteSoIndex = new List<int>();
+            List<int> toDeleteComponentIndex = new List<int>();
+
             for (int index = watchedList.prefabInfos.Length - 1; index >= 0; index--)
             {
                 PrefabInfo target = watchedList.prefabInfos[index];
                 Component comp = target.component;
-                GameObject root = target.root;
-                if (importedObjs.Contains(root))
-                {
-                    continue;
-                }
 
                 // ReSharper disable once SuspiciousTypeConversion.Global
                 if (comp == null || comp is not IPostProcess)
@@ -136,10 +230,6 @@ namespace SaintsBuild.Editor.Utils
             for (int index = watchedList.scriptableObjs.Length - 1; index >= 0; index--)
             {
                 ScriptableObject so = watchedList.scriptableObjs[index];
-                if (importedObjs.Contains(so))
-                {
-                    continue;
-                }
 
                 // ReSharper disable once SuspiciousTypeConversion.Global
                 if (so == null || so is not IPostProcess)
@@ -148,7 +238,7 @@ namespace SaintsBuild.Editor.Utils
                 }
             }
 
-            if (toAddSo.Count == 0 && toDeleteSoIndex.Count == 0 && toDeleteComponentIndex.Count == 0 && toAddComponents.Count == 0)
+            if (toDeleteComponentIndex.Count == 0)
             {
                 return;
             }
@@ -157,27 +247,7 @@ namespace SaintsBuild.Editor.Utils
             {
                 // int toAddSoCount = toAddSo.Count;
                 SerializedProperty soPropArray = so.FindProperty(nameof(AssetPostprocessorWatcherList.scriptableObjs));
-
-                foreach (ScriptableObject target in toAddSo)
-                {
-                    int toAddIndex = soPropArray.arraySize;
-                    soPropArray.arraySize = toAddIndex + 1;
-                    SerializedProperty soPropItem = soPropArray.GetArrayElementAtIndex(toAddIndex);
-                    Debug.Log($"Add {target}@[{toAddIndex}] to watched scriptableObjects");
-                    soPropItem.objectReferenceValue = target;
-                }
-
                 SerializedProperty compPropArray = so.FindProperty(nameof(AssetPostprocessorWatcherList.prefabInfos));
-
-                foreach (PrefabInfo target in toAddComponents)
-                {
-                    int toAddIndex = compPropArray.arraySize;
-                    compPropArray.arraySize = toAddIndex + 1;
-                    SerializedProperty compPropItem = compPropArray.GetArrayElementAtIndex(toAddIndex);
-                    Debug.Log($"Add {target}@[{toAddIndex}] to watched comp");
-                    compPropItem.FindPropertyRelative(nameof(PrefabInfo.root)).objectReferenceValue = target.root;
-                    compPropItem.FindPropertyRelative(nameof(PrefabInfo.component)).objectReferenceValue = target.component;
-                }
 
                 foreach (int toDeleteComp in toDeleteComponentIndex)
                 {
@@ -193,8 +263,6 @@ namespace SaintsBuild.Editor.Utils
 
                 so.ApplyModifiedPropertiesWithoutUndo();
             }
-
-            // AssetPostprocessorWatcherList.instance.SaveToDisk();
         }
 
         // private static readonly List<Component> ToAddComponents = new List<Component>();

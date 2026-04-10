@@ -9,6 +9,11 @@ namespace SaintsBuild.Editor.Utils
     [FilePath("Assets/Editor Default Resources/SaintsBuild/AssetPostprocessorWatcherList.asset", FilePathAttribute.Location.ProjectFolder)]
     public class AssetPostprocessorWatcherList: ScriptableSingleton<AssetPostprocessorWatcherList>
     {
+        private void OnEnable()
+        {
+            hideFlags &= ~HideFlags.NotEditable;
+        }
+
         private const string BackupTargetFolder = "Library/SaintsBuildBackup";
 
         public PrefabInfo[] prefabInfos = {};
