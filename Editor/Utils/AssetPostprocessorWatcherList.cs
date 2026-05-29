@@ -82,9 +82,14 @@ namespace SaintsBuild.Editor.Utils
 #endif
                 backupInfos.Clear();
 
-                using SerializedObject serializedObject = new SerializedObject(this);
-                serializedObject.FindProperty(nameof(backupInfos)).arraySize = 0;
-                serializedObject.ApplyModifiedPropertiesWithoutUndo();
+                // ReSharper disable once InvertIf
+                // Can happen after build processer
+                if(this != null)
+                {
+                    using SerializedObject serializedObject = new SerializedObject(this);
+                    serializedObject.FindProperty(nameof(backupInfos)).arraySize = 0;
+                    serializedObject.ApplyModifiedPropertiesWithoutUndo();
+                }
             };
         }
     }
