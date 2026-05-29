@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-namespace SaintsBuild.Editor.IOS
+namespace SaintsBuild.Editor.OSX
 {
     public class OSXPlist: ApplePlist
     {

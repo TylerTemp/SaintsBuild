@@ -56,7 +56,7 @@ See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/C
 
 ```csharp
 #if UNITY_ANDROID
-using SaintsBuild.Editor;
+using SaintsBuild.Editor.Android;
 using UnityEditor.Callbacks;
 
 namespace SaintsBuild.Samples.Editor
@@ -185,6 +185,30 @@ namespace SaintsBuild.Samples.Editor
     }
 }
 #endif
+```
+
+### OSX(Mac) ###
+
+the `OSXPlist` is just like `IOSPlist`
+
+```csharp
+using SaintsBuild.Editor.OSX;
+
+public static class OsxBuild {
+    [PostProcessBuild(1)]
+    public static void OnPostProcessBuildAttr(BuildTarget target, string path)
+    {
+        Debug.Log($"MacOS Build Path={path}");
+    
+        using (OSXPlist osxPlist = new OSXPlist(target, path))
+        {
+            osxPlist.AddUrlSchemes(new[]  // all iosPlist apis are avaliable for osxPlist
+            {
+                new UrlScheme("SomeName", new string[]{"some-key"}),
+            });
+        }
+    }
+}
 ```
 
 ### Windows ###
