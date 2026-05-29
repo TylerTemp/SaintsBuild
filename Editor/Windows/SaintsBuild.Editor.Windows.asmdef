@@ -1,0 +1,19 @@
+{
+  "name": "SaintsBuild.Editor.Windows",
+  "rootNamespace": "SaintsBuild",
+  "references": [
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": true,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [
+    "UNITY_STANDALONE_WIN"
+  ],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

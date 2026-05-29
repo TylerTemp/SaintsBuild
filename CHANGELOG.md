@@ -1,4 +1,14 @@
-﻿## 2.0.0
+﻿## 2.1.0 ##
+
+Add `SaintsBuild.Editor.Windows.WindowsDetails`, you can now change
+*   ProductName
+*   ProductVersion
+*   FileDescription
+*   LegalCopyright
+*   FileVersion
+for your windows build. No longer says the windows exe version is Unity Editor's version.
+
+## 2.0.0
 
 1.  When processing an asset, it will now get backup on entering play mode or starting build, and get restored when exit play mode or exit build
 2.  Change `IPostProcess.EditorOnPostProcess` to return a `bool` value to show if the asset need to backup/restore. Has no effect for scene objects

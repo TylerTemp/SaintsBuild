@@ -38,12 +38,15 @@
 
 ## Change Log ##
 
-**2.0.0**
+**2.1.0**
 
-1.  When processing an asset, it will now get backup on entering play mode or starting build, and get restored when exit play mode or exit build
-2.  Change `IPostProcess.EditorOnPostProcess` to return a `bool` value to show if the asset need to backup/restore. Has no effect for scene objects
-3.  Fix: WatchList might get purged when building. WatchList now pauses the watcher if the project is playing or building
-4.  Move menu to `Tools/SaintsBuild`
+Add `SaintsBuild.Editor.Windows.WindowsDetails`, you can now change
+*   ProductName
+*   ProductVersion
+*   FileDescription
+*   LegalCopyright
+*   FileVersion
+    for your windows build. No longer says the windows exe version is Unity Editor's version.
 
 See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/CHANGELOG.md).
 
@@ -183,6 +186,40 @@ namespace SaintsBuild.Samples.Editor
 }
 #endif
 ```
+
+### Windows ###
+
+```csharp
+using SaintsBuild.Editor.Windows;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
+using UnityEngine;
+
+public class BuildWindows : IPostprocessBuildWithReport
+{
+    public int callbackOrder => 1000;
+    public void OnPostprocessBuild(BuildReport report)
+    {
+        WindowsDetails windowsDetails = new WindowsDetails(report);
+        
+        // Optional: override rcedit.exe
+        // This only works if you're trying to build the exe package (not export as Visual Studio project)
+        // SaintsBuild comes with rcedit-64.exe v2.0.0 from https://github.com/electron/rcedit
+        // In case you need to provide your own rcedit, you can override the executable path here
+        // windowsDetails.SetRcedit("path/to/rcedit.exe");
+        
+        windowsDetails
+            .SetProductName()  // default to Application.productName, you can pass a custom name here
+            .SetProductVersion()  // default to Application.version, you can pass a custom version here
+            .SetFileVersion()  // default to Application.version, you can pass a custom version here
+            .SetLegalCopyright()  // default to `Copyright (c) {DateTime.Today.Year} {Application.companyName}. All rights reserved.`, you can pass a custom legal copyright here
+            .SetFileDescription($"{Application.productName} is a nice game created by {Application.companyName}. Enjoy!")  // pass your file description
+            .Apply();  // save
+    }
+}
+```
+
+![](https://github.com/user-attachments/assets/6575a0d2-d914-4f4a-a6f1-cadda9a7bb47)
 
 ### IPostProcess ###
 
