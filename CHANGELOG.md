@@ -1,3 +1,7 @@
+## 2.1.2 ##
+
+Fix: Assign package as Unity 6k requires
+
 ﻿## 2.1.1 ##
 
 Fix: built-in `rcedit-x64.exe` could not be found if this package is installed via `openupm`

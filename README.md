@@ -38,9 +38,9 @@
 
 ## Change Log ##
 
-**2.1.1**
+**2.1.2**
 
-Fix: built-in `rcedit-x64.exe` could not be found if this package is installed via `openupm`
+Fix: Assign package as Unity 6k requires
 
 See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/CHANGELOG.md).
 
