@@ -1,4 +1,8 @@
-﻿## 2.1.0 ##
+﻿## 2.1.1 ##
+
+Fix: built-in `rcedit-x64.exe` could not be found if this package is installed via `openupm`
+
+## 2.1.0 ##
 
 Add `SaintsBuild.Editor.Windows.WindowsDetails`, you can now change
 *   ProductName

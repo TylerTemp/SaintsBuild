@@ -270,19 +270,23 @@ namespace SaintsBuild.Editor.Windows
 
         private static readonly string[] ResourceSearchFolder = {
             "Assets/Editor Default Resources/SaintsBuild",
-            "Assets/SaintsBuild/Editor/Editor Default Resources/SaintsBuild",  // unitypackage
             // this is readonly, put it to last so user  can easily override it
             "Packages/today.comes.saintsbuild/Editor/Editor Default Resources/SaintsBuild", // Unity UPM
         };
 
-        private string FindRceditPath()
+        private static string FindRceditPath()
         {
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (string folder in  ResourceSearchFolder)
             {
                 string path = folder + "/rcedit-x64.exe";
-                if (File.Exists(path))
+
+                // Resolve it to an absolute OS-compliant path
+                // Unity automatically remaps this to the correct Library/PackageCache/today.comes.saintsbuild@X.Y.Z/... directory
+                string absolutePath = Path.GetFullPath(path);
+                if (File.Exists(absolutePath))
                 {
-                    return path;
+                    return absolutePath;
                 }
             }
 

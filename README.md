@@ -38,15 +38,9 @@
 
 ## Change Log ##
 
-**2.1.0**
+**2.1.1**
 
-Add `SaintsBuild.Editor.Windows.WindowsDetails`, you can now change
-*   ProductName
-*   ProductVersion
-*   FileDescription
-*   LegalCopyright
-*   FileVersion
-    for your windows build. No longer says the windows exe version is Unity Editor's version.
+Fix: built-in `rcedit-x64.exe` could not be found if this package is installed via `openupm`
 
 See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/CHANGELOG.md).
 
