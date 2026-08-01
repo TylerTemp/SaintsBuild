@@ -55,16 +55,12 @@ using UnityEditor.Callbacks;
 
 namespace SaintsBuild.Samples.Editor
 {
-    public static class BuildAndroid
+    public static class BuildAndroid : IPostGenerateGradleAndroidProject
     {
-        [PostProcessBuild(1)]
-        public static void OnPostGenerateGradleAndroidProject(BuildTarget target, string pathToBuiltProject)
-        {
-            if (target != BuildTarget.Android)
-            {
-                return;
-            }
+        public int callbackOrder => 1;
 
+        public void OnPostGenerateGradleAndroidProject(string path)
+        {
             using AndroidManifest androidAppManifest = new AndroidManifest(path);
 
             // required for android 12 if you have activity alias etc:
