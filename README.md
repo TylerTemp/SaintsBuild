@@ -51,7 +51,7 @@ See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/C
 ```csharp
 #if UNITY_ANDROID
 using SaintsBuild.Editor.Android;
-using UnityEditor.Callbacks;
+using UnityEditor.Android;
 
 namespace SaintsBuild.Samples.Editor
 {
@@ -78,7 +78,7 @@ namespace SaintsBuild.Samples.Editor
             androidManifest.SetPermissionAttribute("WRITE_EXTERNAL_STORAGE", 18);
 
             // change values under `launcher/src/main/res`
-            AndroidRes androidRes = new AndroidRes(pathToBuiltProject);
+            AndroidRes androidRes = new AndroidRes(path);
             // add new
             using (AndroidValue valueXml = androidRes.CreateOrGetValue("values-b+zh+Hans/string.xml"))
             {
