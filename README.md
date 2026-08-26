@@ -50,8 +50,9 @@ See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/C
 
 ```csharp
 #if UNITY_ANDROID
+using UnityEngine;
+using UnityEditor.Android;
 using SaintsBuild.Editor.Android;
-using UnityEditor.Callbacks;
 
 namespace SaintsBuild.Samples.Editor
 {

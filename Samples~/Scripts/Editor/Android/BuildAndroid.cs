@@ -1,13 +1,11 @@
 ﻿#if UNITY_ANDROID
-using SaintsBuild.Editor;
-using SaintsBuild.Editor.Android;
-using UnityEditor;
-using UnityEditor.Callbacks;
 using UnityEngine;
+using UnityEditor.Android;
+using SaintsBuild.Editor.Android;
 
 namespace SaintsBuild.Samples.Scripts.Editor.Android
 {
-    public static class BuildAndroid : IPostGenerateGradleAndroidProject
+    public class BuildAndroid : IPostGenerateGradleAndroidProject
     {
 
         public int callbackOrder => 1;
