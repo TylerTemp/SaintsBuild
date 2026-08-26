@@ -38,9 +38,9 @@
 
 ## Change Log ##
 
-**2.1.2**
+**2.1.3**
 
-Fix: Assign package as Unity 6k requires
+Fix: Android `AndroidRes` now can get the correct path for directly building apk. README updated.
 
 See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/CHANGELOG.md).
 
