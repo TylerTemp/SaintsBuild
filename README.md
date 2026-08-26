@@ -38,9 +38,9 @@
 
 ## Change Log ##
 
-**2.1.3**
+**2.1.2**
 
-Fix: Android `AndroidRes` now can get the correct path for directly building apk. README updated.
+Fix: Assign package as Unity 6k requires
 
 See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/CHANGELOG.md).
 
@@ -50,23 +50,17 @@ See [the full change log](https://github.com/TylerTemp/SaintsBuild/blob/master/C
 
 ```csharp
 #if UNITY_ANDROID
-using UnityEngine;
-using UnityEditor.Android;
 using SaintsBuild.Editor.Android;
+using UnityEditor.Callbacks;
 
 namespace SaintsBuild.Samples.Editor
 {
-    public class BuildAndroid : IPostGenerateGradleAndroidProject
+    public static class BuildAndroid : IPostGenerateGradleAndroidProject
     {
         public int callbackOrder => 1;
 
         public void OnPostGenerateGradleAndroidProject(string path)
         {
-            if (target != BuildTarget.Android)
-            {
-                return;
-            }
-
             using AndroidManifest androidAppManifest = new AndroidManifest(path);
 
             // required for android 12 if you have activity alias etc:
@@ -84,7 +78,7 @@ namespace SaintsBuild.Samples.Editor
             androidManifest.SetPermissionAttribute("WRITE_EXTERNAL_STORAGE", 18);
 
             // change values under `launcher/src/main/res`
-            AndroidRes androidRes = new AndroidRes(path);
+            AndroidRes androidRes = new AndroidRes(pathToBuiltProject);
             // add new
             using (AndroidValue valueXml = androidRes.CreateOrGetValue("values-b+zh+Hans/string.xml"))
             {
