@@ -1,6 +1,6 @@
 {
   "name": "today.comes.saintsbuild",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "displayName": "SaintsBuild",
   "description": "A Unity plugin for building (packing) process",
   "unity": "2020.1",

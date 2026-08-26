@@ -17,7 +17,7 @@ namespace SaintsBuild.Editor.Android
         public AndroidRes(string pathToBuiltProject, string resFolder=LauncherResFolder)
         {
             _resFolder = Path.Combine(
-                pathToBuiltProject,
+                Directory.GetParent(pathToBuiltProject)!.FullName,
                 resFolder
                 // "launcher/src/main/res"
                 // "unityLibrary/src/main/res"

@@ -1,8 +1,12 @@
+## 2.1.3 ##
+
+Fix: Android `AndroidRes` now can get the correct path for directly building apk. README updated.
+
 ## 2.1.2 ##
 
 Fix: Assign package as Unity 6k requires
 
-﻿## 2.1.1 ##
+## 2.1.1 ##
 
 Fix: built-in `rcedit-x64.exe` could not be found if this package is installed via `openupm`
 

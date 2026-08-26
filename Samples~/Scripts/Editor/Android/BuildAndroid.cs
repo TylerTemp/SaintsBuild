@@ -7,10 +7,12 @@ using UnityEngine;
 
 namespace SaintsBuild.Samples.Scripts.Editor.Android
 {
-    public static class BuildAndroid
+    public static class BuildAndroid : IPostGenerateGradleAndroidProject
     {
-        [PostProcessBuild(1)]
-        public static void OnPostGenerateGradleAndroidProject(BuildTarget target, string pathToBuiltProject)
+
+        public int callbackOrder => 1;
+
+        public void OnPostGenerateGradleAndroidProject (BuildTarget target, string pathToBuiltProject)
         {
             if (target != BuildTarget.Android)
             {
