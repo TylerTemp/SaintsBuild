@@ -59,7 +59,7 @@ namespace SaintsBuild.Samples.Editor
     {
         public int callbackOrder => 1;
 
-        public void OnPostGenerateGradleAndroidProject(BuildTarget target, string pathToBuiltProject)
+        public void OnPostGenerateGradleAndroidProject(string path)
         {
             if (target != BuildTarget.Android)
             {
@@ -83,7 +83,7 @@ namespace SaintsBuild.Samples.Editor
             androidManifest.SetPermissionAttribute("WRITE_EXTERNAL_STORAGE", 18);
 
             // change values under `launcher/src/main/res`
-            AndroidRes androidRes = new AndroidRes(pathToBuiltProject);
+            AndroidRes androidRes = new AndroidRes(path);
             // add new
             using (AndroidValue valueXml = androidRes.CreateOrGetValue("values-b+zh+Hans/string.xml"))
             {

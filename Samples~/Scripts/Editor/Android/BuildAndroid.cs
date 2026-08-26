@@ -12,14 +12,9 @@ namespace SaintsBuild.Samples.Scripts.Editor.Android
 
         public int callbackOrder => 1;
 
-        public void OnPostGenerateGradleAndroidProject (BuildTarget target, string pathToBuiltProject)
+        public void OnPostGenerateGradleAndroidProject(string path)
         {
-            if (target != BuildTarget.Android)
-            {
-                return;
-            }
-
-            using AndroidManifest androidManifest = new AndroidManifest(pathToBuiltProject);
+            using AndroidManifest androidManifest = new AndroidManifest(path);
 
             // required for android 12 if you have activity alias etc:
             Debug.Log($"Add android:exported=true");
@@ -38,7 +33,7 @@ namespace SaintsBuild.Samples.Scripts.Editor.Android
             androidManifest.SetPermissionAttribute("WRITE_EXTERNAL_STORAGE", 18);
 
             // change values under `launcher/src/main/res`
-            AndroidRes androidRes = new AndroidRes(pathToBuiltProject);
+            AndroidRes androidRes = new AndroidRes(path);
             // add new
             using (AndroidValue valueXml = androidRes.CreateOrGetValue("values-b+zh+Hans/string.xml"))
             {
