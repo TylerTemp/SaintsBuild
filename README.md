@@ -57,7 +57,7 @@ using UnityEditor.Android;
 
 namespace SaintsBuild.Samples.Editor
 {
-    public static class BuildAndroid : IPostGenerateGradleAndroidProject
+    public class BuildAndroid : IPostGenerateGradleAndroidProject
     {
         public int callbackOrder => 1;
 
