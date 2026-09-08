@@ -5,6 +5,8 @@
 
 `SaintsBuild` is a Unity build (packing) tool for Unity, mainly focused on android and ios.
 
+SaintsBuild and its bundled [rcedit](https://github.com/electron/rcedit) are MIT-licensed. See [ThirdPartyNotices.txt](ThirdPartyNotices.txt) for rcedit's copyright and license.
+
 ## Installation ##
 
 *   Using [OpenUPM](https://openupm.com/packages/today.comes.saintsbuild/)
